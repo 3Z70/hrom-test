@@ -1,984 +1,984 @@
 <!DOCTYPE html>
-<html lang="zh-Hans">
+<html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>环境保护意识调查问卷</title>
+<title>你的性格測驗</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--bg0:#eff0ec;--fg0:#2b2b2b;--greenD:#0e2a13;--greenF:#a8e0a0;--redD:#1a0000;--redF:#ff6b5b;--vine:#5f9c4a;--vb:#9adf7a;--blood:#ff3b30}
-html,body{height:100%}
-body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;color:var(--fg0);background:var(--bg0);transition:background 1.8s,color 1.2s;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}
-body::before{content:"";position:fixed;top:-60%;left:-60%;right:-60%;bottom:-60%;background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2"/></filter><rect width="200" height="200" filter="url(%23n)" opacity=".5"/></svg>');opacity:.05;pointer-events:none;z-index:0;animation:grain 20s linear infinite}
-@keyframes grain{0%{transform:translate(0)}100%{transform:translate(40px,40px)}}
-body.gm{background:var(--greenD);color:var(--greenF)}body.rm{background:var(--redD);color:var(--redF)}
-body.gm::before{opacity:.12}body.rm::before{opacity:.22;filter:sepia(1) hue-rotate(300deg) saturate(3)}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a0f;
+    color: #e0e0e0;
+    font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  #game-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    min-height: 100vh;
+    position: relative;
+    transition: filter 0.5s;
+  }
+  .title-screen {
+    text-align: center;
+    padding-top: 15vh;
+  }
+  .title-screen h1 {
+    font-size: 2.2em;
+    color: #c8c8d0;
+    margin-bottom: 12px;
+    letter-spacing: 4px;
+  }
+  .title-screen .subtitle {
+    color: #777;
+    font-size: 0.95em;
+    margin-bottom: 40px;
+    line-height: 1.8;
+  }
+  .title-screen .notice {
+    color: #555;
+    font-size: 0.8em;
+    margin-bottom: 30px;
+    line-height: 2;
+    border: 1px solid #222;
+    padding: 16px;
+    border-radius: 4px;
+  }
+  .btn {
+    display: inline-block;
+    padding: 12px 36px;
+    border: 1px solid #444;
+    background: transparent;
+    color: #aaa;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.3s;
+    font-family: inherit;
+    letter-spacing: 2px;
+  }
+  .btn:hover { border-color: #888; color: #fff; }
+  .question-block { display: none; }
+  .question-block.active { display: block; animation: fadeIn 0.8s ease; }
+  .q-header {
+    font-size: 0.8em;
+    color: #555;
+    margin-bottom: 24px;
+    letter-spacing: 1px;
+  }
+  .q-text {
+    font-size: 1.2em;
+    color: #d0d0d8;
+    margin-bottom: 32px;
+    line-height: 1.8;
+  }
+  .options { display: flex; flex-direction: column; gap: 12px; }
+  .opt-btn {
+    padding: 14px 20px;
+    border: 1px solid #333;
+    background: rgba(255,255,255,0.02);
+    color: #bbb;
+    font-size: 0.95em;
+    cursor: pointer;
+    border-radius: 3px;
+    text-align: left;
+    transition: all 0.3s;
+    font-family: inherit;
+    line-height: 1.6;
+  }
+  .opt-btn:hover {
+    border-color: #666;
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+  }
+  .opt-btn.selected { border-color: #888; color: #fff; }
 
-#bloodink{position:fixed;inset:0;pointer-events:none;z-index:3;opacity:0;box-shadow:inset 0 0 160px rgba(120,0,0,.6);transition:opacity 2s}
-body.rm #bloodink{opacity:1}
-#bloodink .drop{position:absolute;bottom:120%;width:4px;background:rgba(120,0,0,.55);border-radius:2px;animation:drip linear infinite}
-@keyframes drip{to{bottom:-10%}}
-#greenglow{position:fixed;inset:0;pointer-events:none;z-index:3;opacity:0;box-shadow:inset 0 0 120px rgba(40,120,40,.35);transition:opacity 2s}
-body.gm #greenglow{opacity:1}
+  .ghost-a {
+    color: #7f9f9c;
+  }
+  .ghost-a::after {
+    content: '';
+    display: inline-block;
+    width: 0.35em;
+    height: 0.35em;
+    margin-left: 2px;
+    border-radius: 50%;
+    background: #7f9f9c;
+    opacity: 0.6;
+    animation: ghostPulse 2.2s ease-in-out infinite;
+  }
+  .ghost-b {
+    color: #a8514f;
+  }
+  .ghost-b::after {
+    content: '';
+    display: inline-block;
+    width: 0.35em;
+    height: 0.35em;
+    margin-left: 2px;
+    border-radius: 50%;
+    background: #a8514f;
+    opacity: 0.6;
+    animation: ghostPulse 2.2s ease-in-out infinite;
+    animation-delay: 1.1s;
+  }
+  .ghost-both { color: #7a6a83; }
 
-#app{position:relative;z-index:4;width:min(680px,92vw);min-height:58vh;padding:30px 36px 28px;border-radius:2px;background:rgba(255,255,255,.72);border:1px solid #ccc;box-shadow:0 18px 50px rgba(0,0,0,.12);transition:background 1.4s,border 1.2s,box-shadow 1.2s,color .8s}
-body.gm #app{background:rgba(8,22,10,.82);border-color:rgba(120,200,110,.35);box-shadow:0 0 60px rgba(60,160,60,.18)}
-body.rm #app{background:rgba(20,0,0,.85);border-color:rgba(255,90,70,.4);box-shadow:0 0 70px rgba(190,0,0,.22)}
+  @keyframes ghostPulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; box-shadow: 0 0 2px currentColor; }
+    50%      { transform: scale(1.5); opacity: 0.9; box-shadow: 0 0 8px currentColor; }
+  }
 
-/* 进度条 */
-#head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;font-size:12px;letter-spacing:1px;opacity:.7;flex-direction:column;gap:6px}
-#meter{display:flex;align-items:center;gap:8px;font-weight:600;width:100%}
-#meter .bar{flex:1;height:8px;background:rgba(0,0,0,.18);border-radius:4px;overflow:hidden;border:1px solid rgba(0,0,0,.1)}
-body.gm #meter .bar{background:rgba(0,0,0,.4)}body.rm #meter .bar{background:rgba(0,0,0,.5)}
-#meter .fill{height:100%;width:4%;background:#8b8b8b;border-radius:4px;transition:width 1.5s ease,background 1.5s}
-body.gm #meter .fill{background:#7ee6a0}body.rm #meter .fill{background:#ff5a4b}
-#meterLabel{font-size:11px;white-space:nowrap;min-width:70px}
-#meterVal{font-size:11px;opacity:.8;white-space:nowrap}
-#psub{font-size:11px;color:#aaa;min-height:14px;transition:color 1s,opacity 1s;letter-spacing:.5px}
-body.rm #psub{color:#ff9a86}
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes glitchText {
+    0%, 90%, 100% { transform: translate(0); opacity: 1; }
+    92% { transform: translate(-2px, 1px); opacity: 0.8; }
+    94% { transform: translate(2px, -1px); opacity: 0.9; }
+    96% { transform: translate(-1px, -2px); opacity: 0.7; }
+    98% { transform: translate(1px, 2px); opacity: 0.85; }
+  }
+  @keyframes flicker { 0%,100% { opacity: 1; } 50% { opacity: 0.97; } 52% { opacity: 0.4; } 54% { opacity: 0.98; } }
+  @keyframes scanline {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100vh); }
+  }
+  @keyframes bloodDrip {
+    0% { height: 0; opacity: 0.8; }
+    100% { height: 80px; opacity: 0; }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
+  }
+  @keyframes corruptFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.3; }
+    50% { opacity: 0.15; }
+    90% { opacity: 0.25; }
+  }
+  .big-reveal {
+    font-size: 2.6em;
+    font-weight: bold;
+    letter-spacing: 6px;
+    margin: 30px 0 10px;
+    position: relative;
+    display: inline-block;
+    color: #d0d0d8;
+    text-shadow: 2px 0 #a8514f, -2px 0 #7f9f9c;
+    animation: bigRevealFlicker 0.12s steps(2) infinite;
+  }
+  @keyframes bigRevealFlicker {
+    0%, 55%, 100% { opacity: 1; transform: translate(0,0); }
+    60% { opacity: 0.4; transform: translate(-3px, 2px) skewX(3deg); }
+    62% { opacity: 0.9; transform: translate(2px, -2px); }
+    64% { opacity: 0.6; transform: translate(-1px, 3px) skewX(-2deg); }
+    70% { opacity: 1; transform: translate(0,0); }
+  }
+  .big-reveal .corrupt {
+    color: #a8514f;
+    text-shadow: 1px 0 #7f9f9c;
+  }
+  .big-reveal .corrupt2 {
+    color: #7f9f9c;
+    text-shadow: 1px 0 #a8514f;
+  }
+  .big-reveal-glow {
+    animation: bigGlow 1.6s ease-in-out infinite;
+  }
+  @keyframes bigGlow {
+    0%, 100% { text-shadow: 2px 0 #a8514f, -2px 0 #7f9f9c, 0 0 6px rgba(122,106,131,0.3); }
+    50% { text-shadow: 2px 0 #a8514f, -2px 0 #7f9f9c, 0 0 18px rgba(122,106,131,0.8); }
+  }
+  @keyframes redPulse {
+    0%, 100% { box-shadow: none; }
+    50% { box-shadow: inset 0 0 120px rgba(255,0,0,0.08); }
+  }
+  .glitch-active { animation: glitchText 0.3s steps(2) infinite; }
+  .flicker-active { animation: flicker 0.15s infinite; }
+  .shake-active { animation: shake 0.1s infinite; }
 
-#subtitle{font-size:12px;color:#8c8c8c;letter-spacing:1px;margin-bottom:6px;transition:color .6s}
-body.gm #subtitle{color:#86c47e}body.rm #subtitle{color:#ff9a86}
+  .scanline-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: repeating-linear-gradient(
+      0deg, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 1px,
+      transparent 1px, transparent 2px
+    );
+    pointer-events: none; z-index: 100;
+    opacity: 0;
+    transition: opacity 1s;
+  }
+  .scanline-overlay.visible { opacity: 1; }
 
-#question{font-size:19px;font-weight:500;line-height:1.7;min-height:70px;margin-bottom:20px;opacity:0;transition:opacity .45s,filter .5s;user-select:none;position:relative}
-#question.in{opacity:1}
-body.rm #question{color:#ffd7d0}
-/* 错版字体：重影、错位、笔画叠影 */
-#question.corrupt{text-shadow:2px 0 rgba(255,80,60,.4),-2px 0 rgba(100,200,100,.3),0 3px 6px rgba(0,0,0,.2);animation:corruptShift 3s infinite,corruptJitter .28s steps(2) infinite}
-@keyframes corruptShift{0%,85%{letter-spacing:0}88%{letter-spacing:6px;filter:blur(.5px)}92%{letter-spacing:0;filter:none}100%{letter-spacing:0}}
-@keyframes corruptJitter{0%{transform:translate(0)}25%{transform:translate(-1px,.5px)}50%{transform:translate(1px,-.5px)}75%{transform:translate(-.5px,-1px)}100%{transform:translate(1px,1px)}}
-/* 叠影鬼层：把题目文字复制成多层偏移，制造"许多笔画叠在一起" */
-#question.corrupt::before,#question.corrupt::after{content:attr(data-ghost);position:absolute;top:0;left:0;white-space:pre-wrap;pointer-events:none;letter-spacing:inherit}
-#question.corrupt::before{color:rgba(255,60,50,.25);transform:translate(3px,0);animation:ghostL 2.4s steps(3) infinite}
-#question.corrupt::after{color:rgba(130,220,130,.2);transform:translate(-3px,1px);animation:ghostR 3.1s steps(3) infinite}
-@keyframes ghostL{0%,30%{transform:translate(3px,0)}35%,65%{transform:translate(-4px,-1px)}70%,100%{transform:translate(4px,1px)}}
-@keyframes ghostR{0%,30%{transform:translate(-3px,1px)}35%,65%{transform:translate(4px,-1px)}70%,100%{transform:translate(-5px,1px)}}
+  .floating-text {
+    position: fixed;
+    font-size: 0.75em;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0;
+    animation: corruptFloat 6s ease-in-out infinite;
+  }
 
-#opts{display:flex;flex-direction:column;gap:8px}
-.opt{text-align:left;font-size:15px;line-height:1.5;padding:12px 15px;border-radius:4px;cursor:pointer;color:var(--fg0);background:rgba(0,0,0,.03);border:1px solid rgba(0,0,0,.1);transition:all .25s,opacity .4s,filter .3s;font-family:inherit;position:relative}
-.opt:hover{background:rgba(0,0,0,.07)}
-/* 环保 / 污染 模式下选项必须可见：浅色文字保证可读，同时带恐怖氛围 */
-body.gm .opt{color:#d4efcd;background:rgba(100,190,110,.08);border-color:rgba(130,210,120,.35)}
-body.gm .opt:hover{background:rgba(100,190,110,.2);border-color:rgba(160,230,150,.55)}
-body.rm .opt{color:#ffd3c6;background:rgba(220,60,40,.09);border-color:rgba(255,70,50,.4);text-shadow:1px 1px 3px rgba(0,0,0,.5)}
-body.rm .opt:hover{background:rgba(230,60,40,.22);border-color:rgba(255,110,90,.65);text-shadow:0 0 6px rgba(255,60,40,.5)}
-.opt:disabled{cursor:default}.opt.dim{opacity:.28;filter:blur(1px)}
-.opt.damp{border-left:3px solid var(--vine)}
-.opt .drip{position:absolute;left:14px;bottom:4px;width:3px;height:0;background:var(--vine);border-radius:2px;opacity:.65}
-/* 空选项呼吸 */
-.opt.blank-opt{opacity:.35;border-style:dashed;border-color:rgba(0,0,0,.15);text-align:center;font-size:14px;color:transparent}
-.opt.blank-opt:hover{animation:breathe 2s ease-in-out infinite}
-@keyframes breathe{0%,100%{transform:scale(1);opacity:.35}50%{transform:scale(1.06);opacity:.55}}
-body.gm .opt.blank-opt{border-color:rgba(120,200,110,.3)}
-body.rm .opt.blank-opt{border-color:rgba(255,90,70,.3)}
-/* 只准选我：唯一跳动的暗红选项 */
-.opt.onlyme{color:#ff3b2f;border-color:#ff3b2f;background:rgba(150,0,0,.12);text-align:center;font-size:18px;font-weight:700;letter-spacing:4px;animation:onlymePulse 1.2s ease-in-out infinite;text-shadow:0 0 12px rgba(255,40,30,.6)}
-.opt.onlyme:hover{background:rgba(200,0,0,.22)}
-@keyframes onlymePulse{0%,100%{transform:scale(1);box-shadow:0 0 10px rgba(255,30,20,.4);border-color:#ff3b2f}50%{transform:scale(1.05);box-shadow:0 0 26px rgba(255,30,20,.85);border-color:#ff564a}}
+  .blackout {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #000; z-index: 200;
+    display: none;
+    justify-content: center; align-items: center;
+    flex-direction: column;
+    color: #c0c0c0;
+    font-size: 1.1em;
+    letter-spacing: 3px;
+    line-height: 2.5;
+    text-align: center;
+    padding: 40px;
+  }
+  .blackout.visible { display: flex; animation: fadeIn 1s ease; }
+  .blackout .ghost-line { margin: 8px 0; opacity: 0; animation: fadeIn 1.5s ease forwards; }
 
-#feedback{margin-top:18px;min-height:24px;font-size:15px;line-height:1.6;white-space:pre-wrap;color:inherit;opacity:0;transition:opacity .4s}
-#feedback.on{opacity:1}
-#feedback.big{font-size:20px;font-weight:800;text-align:center;letter-spacing:2px}
-#feedback.monster{color:#ff6a5a}#feedback.gentle{color:#a4e8a0}
-
-#fill{display:none;flex-direction:column;gap:12px;margin-top:4px}
-#fill.show{display:flex}
-#fill input{padding:12px 14px;font-size:15px;color:#333;background:#fff;border:1px solid #bbb;border-radius:4px;font-family:inherit;outline:none}
-body.gm #fill input{background:#0a1a0c;color:var(--greenF);border-color:#2c4a2c}
-body.rm #fill input{background:#1a0000;color:var(--redF);border-color:#5a1a14}
-#fillBtn{padding:11px 0;font-size:15px;cursor:pointer;font-family:inherit;background:#333;color:#fff;border:none;border-radius:4px}
-body.gm #fillBtn{background:#2e5a2e}body.rm #fillBtn{background:#6a1a12}
-#fillBtn:hover{background:#555}
-
-#hint{font-size:12px;color:#9a9a9a;margin-top:14px;font-style:italic}
-body.gm #hint{color:#6f8f68}body.rm #hint{color:#a06a60}
-
-/* 回到上一题按钮 */
-#backBtn{position:absolute;top:14px;right:16px;font-size:11px;color:inherit;opacity:.3;cursor:pointer;background:none;border:1px solid currentColor;border-radius:3px;padding:3px 8px;font-family:inherit;transition:opacity .3s;letter-spacing:1px}
-#backBtn:hover{opacity:.6}
-#backBtn.trapped{animation:trappedShake .15s infinite;opacity:.8;cursor:not-allowed}
-@keyframes trappedShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}
-
-/* 弹窗求饶 */
-#popup{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7)}
-#popup.show{display:flex}
-#popup .pbox{background:#f8f8f6;border:1px solid #ccc;border-radius:10px;max-width:380px;width:90%;padding:24px 20px;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.25)}
-#popup .ptitle{font-size:15px;color:#333;margin-bottom:18px;line-height:1.6}
-#popup .pbtns{display:flex;gap:10px;justify-content:center}
-#popup .pbtn{padding:8px 24px;font-size:14px;border-radius:6px;cursor:pointer;font-family:inherit;border:1px solid #bbb;background:#fff;color:#333;transition:background .2s}
-#popup .pbtn:hover{background:#eee}
-#popup .pbtn.alt{background:#c33;color:#fff;border-color:#c33}
-#popup .pbtn.alt:hover{background:#a22}
-
-/* 伪关闭 */
-#fakequit{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;background:#000;color:#fff;font-size:20px;text-align:center;padding:30px;opacity:0;transition:opacity 1s}
-#fakequit.show{display:flex;opacity:1}
-#fakequit.fadein{opacity:1}
-
-/* 假结束 */
-#fakeend{position:fixed;inset:0;z-index:28;display:none;align-items:center;justify-content:center;background:rgba(255,255,255,.95);color:#333;text-align:center;flex-direction:column;gap:12px;font-size:18px}
-#fakeend.show{display:flex}
-#fakeend .fe-sub{font-size:13px;color:#999}
-#fakeend .fe-main{font-size:22px;font-weight:500}
-
-/* glitch全屏 */
-#glitch{position:fixed;inset:0;z-index:25;display:none;background:#0b0000;color:#7ee6a0;font-family:monospace;font-size:14px;line-height:1.4;white-space:pre-wrap;overflow:hidden;padding:18px}
-#glitch.green{background:#04100a;color:#7ee6a0}
-#glitch.red{background:#0b0000;color:#ff5a4b}
-#glitch.show{display:block}
-#glitch .row{display:inline}
-#glitch .row.red{color:#ff5a4b}
-#glitch .row.green{color:#7ee6a0}
-/* 清醒句：深绿，像藻类在乱码里蔓延 */
-#glitch .lucid{color:#5fbf6f;text-shadow:0 0 10px #2f8a3a,0 0 22px rgba(60,160,70,.6);opacity:.92;animation:algae 2.2s infinite}
-@keyframes algae{0%,100%{opacity:.92;text-shadow:0 0 8px #2f8a3a}50%{opacity:1;text-shadow:0 0 16px #4fd96a,0 0 30px rgba(80,200,90,.8)}}
-
-/* 分线前入侵黑屏（Q12 与 Q13 之间）：环保温柔 / 污染歇斯底里 */
-#glitch .cin{position:absolute;inset:0;padding:26px;display:flex;flex-direction:column;justify-content:center;align-items:center;/* 对话居中 */;box-sizing:border-box}
-#glitch .cin .ln{display:block;opacity:0;font-size:17px;line-height:2;letter-spacing:1px;margin-top:14px;animation:cin-seep 2.2s forwards}
-@keyframes cin-seep{0%{opacity:0;transform:translateY(26px)}60%{opacity:.9}100%{opacity:1;transform:translateY(0)}}
-#glitch .cin .hold{opacity:0;animation:cin-seep 1.2s .2s forwards}
-#glitch .cin .spread{letter-spacing:2px;animation:cin-seep 2s .2s forwards,spread 1.6s .4s forwards}
-@keyframes spread{from{letter-spacing:2px}to{letter-spacing:9px}}
-#glitch .cin .flash{font-size:32px;text-align:center;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;animation:flashbg .9s 1;opacity:0}
-@keyframes flashbg{0%{opacity:0}30%{opacity:1}70%{opacity:1}100%{opacity:0}}
-#glitch .cin .dim{color:#5a8f6a;animation:cin-seep 2.5s .2s forwards}
-#glitch .cin .huge{font-size:44px;text-align:center;line-height:1.9;letter-spacing:18px;opacity:0;animation:floatup 4s 1s forwards}
-@keyframes floatup{0%{opacity:0;transform:translateY(60px);letter-spacing:26px}60%{opacity:1}100%{opacity:1;transform:translateY(0);letter-spacing:14px}}
-/* 污染 */
-#glitch.cinr .lnd{color:#ff5a4b;animation:cin-seep 2.2s .2s forwards;opacity:0;position:relative}
-#glitch.cinr .lnbig{font-size:70px;text-align:center;line-height:1.2;color:#e21818;text-shadow:0 0 40px rgba(255,0,0,.8),0 0 90px rgba(255,0,0,.5);animation:cin-seep 1s .2s forwards,bigthrob 1.4s infinite}
-@keyframes bigthrob{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-#glitch.cinr .flood{font-size:12px;color:#8a2b2b;line-height:1.7;letter-spacing:1px;white-space:pre-wrap;animation:cin-seep 1.4s .2s forwards}
-#glitch.cinr .cracked{color:#ff5a4b;text-shadow:1px 1px 0 #7a1a1a,2px 2px 0 #5e1010;animation:cin-seep 2s .2s forwards}
-#glitch.cinr .drip{font-size:40px;text-align:center;letter-spacing:16px;color:#ff4a3a;animation:floatup 4s 1s forwards,drift 2s infinite}
-@keyframes drift{0%,100%{filter:drop-shadow(0 0 0 transparent)}50%{filter:drop-shadow(0 6px 10px rgba(255,0,0,.6))}}
-/* 满屏累积溢出的词块（一个好喜欢 / 为什么 / 我好疼 / 你弄疼我了，一个个浮现越推越满） */
-#glitch .burst{position:absolute;inset:0;overflow:hidden;pointer-events:none}
-#glitch .burst .bword{position:absolute;font-weight:900;white-space:nowrap;animation:pop .32s forwards}
-@keyframes pop{0%{opacity:0;transform:scale(.3)}70%{opacity:1}100%{opacity:1;transform:scale(1)}}
-#glitch .burst .bword.good{color:#4fd96a;text-shadow:0 0 20px #37b34d;font-size:20px;letter-spacing:3px}
-#glitch .burst .bword.bad{color:#ff3030;text-shadow:0 0 16px #a00000;font-size:15px;letter-spacing:1px}
-#glitch .burst .bword.redblock{color:#ff2020;text-shadow:0 0 24px #ff0000;font-size:20px;letter-spacing:2px;background:rgba(120,0,0,.28);padding:2px 8px;border-radius:2px}
-#glitch .burst .bword.big{font-size:64px;color:#ff2020;text-shadow:0 0 46px #ff0000,0 0 90px rgba(255,0,0,.6)}
-/* 键盘打字：一个字一个字敲出来，带闪烁光标 */
-#glitch .typed{opacity:0;font-size:17px;line-height:2;letter-spacing:1px;margin-top:14px}
-#glitch .typed.dim{color:#8fbf9f}
-#glitch .caret{display:inline-block;width:9px;height:1.05em;background:currentColor;vertical-align:-2px;margin-left:2px;animation:cblink .55s steps(1) infinite}
-@keyframes cblink{0%,100%{opacity:1}50%{opacity:0}}
-#glitch .finaltop{position:absolute;top:22px;left:0;right:0;text-align:center;font-size:20px;z-index:4}
-#glitch .finaltop .typed{font-size:20px;letter-spacing:8px;margin-top:0}
-#glitch .finaltop .typed.dim{color:inherit}
-/* 通用：结局/退出黑屏的键盘打字 */
-.blinkcaret{display:inline-block;width:10px;height:1.1em;background:currentColor;vertical-align:-3px;margin-left:2px;animation:cblink .5s steps(1) infinite}
-.tt{display:block;opacity:0;white-space:pre-wrap}
-.tt.on{opacity:1}
-
-/* 结语 */
-#overlay{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;text-align:center;padding:30px}
-#overlay.show{display:flex}
-#overlay .ov-in{max-width:640px;color:inherit}
-#overlay .ov-text{font-size:22px;line-height:2;font-weight:500;white-space:pre-wrap}
-#overlay .ov-sub{font-size:13px;margin-top:20px}
-#overlay .ov-close{margin-top:32px;padding:11px 28px;font-size:14px;cursor:pointer;font-family:inherit;background:transparent;border:1px solid currentColor;border-radius:4px}
-#overlay.er{background:rgba(20,0,0,.95);color:#ff7a6a}
-#overlay.eg{background:rgba(4,16,8,.95);color:#9adf7a}
-.ov-dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-left:8px;animation:beat 1.2s ease-in-out infinite}
-#overlay.er .ov-dot{background:#ff4b3a;box-shadow:0 0 14px #ff4b3a}
-#overlay.eg .ov-dot{background:#7ee6a0;box-shadow:0 0 14px #7ee6a0}
-@keyframes beat{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.35);opacity:.6}}
-
-/* 离开防护 */
-#quit-g{position:fixed;inset:0;z-index:35;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.92);text-align:center;padding:30px}
-#quit-g.show{display:flex}
-#quit-g .qg-t{font-size:18px;line-height:2;white-space:pre-wrap}
-#quit-g button{margin-top:26px;padding:11px 30px;font-family:inherit;cursor:pointer;background:transparent;border:1px solid currentColor;border-radius:4px}
-body.gm #quit-g{color:#7ee6a0}body.rm #quit-g{color:#ff5a4b}
-
-/* 开场 */
-#intro{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:var(--bg0);transition:opacity .8s;text-align:center}
-#intro.hide{opacity:0;pointer-events:none}
-#intro .inn{max-width:560px;padding:30px}
-#intro h1{font-size:22px;letter-spacing:3px;margin-bottom:22px;color:#2b2b2b;font-weight:500}
-#intro p{font-size:14px;color:#6b6b6b;line-height:1.9;margin-bottom:6px}
-#intro .note{font-size:12px;color:#aaa;margin-top:22px;font-style:italic}
-#intro button{margin-top:26px;padding:12px 40px;font-size:15px;font-family:inherit;cursor:pointer;background:#2b6b2b;color:#fff;border:none;border-radius:4px;letter-spacing:2px}
-#intro button:hover{background:#1f5a1f}
-
-#corner{position:fixed;right:20px;bottom:18px;z-index:6;font-size:13px;opacity:0;transition:opacity 1.8s;letter-spacing:1px;user-select:none}
-body.gm #corner{color:#7ee6a0}body.rm #corner{color:#ff5a4b}
-#corner.on{opacity:.7}
-
-.caret::after{content:"\25CD";animation:blink 1s infinite}
-@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
-
-/* 脉搏震动 */
-@keyframes pulseShake{0%,100%{transform:translate(0)}10%{transform:translate(0,-1px)}20%{transform:translate(0)}}
-body.pulse #app{animation:pulseShake .3s ease}
-
-/* ════ 结局电影层 ════ */
-.ending-cv{position:fixed;inset:0;z-index:5;overflow:hidden;background:#000}
-.ending-cv.ecv-green{background:radial-gradient(130% 130% at 50% 25%,#1a4a22 0%,#0a3014 45%,#021408 100%)}
-/* 渗出文字（自下而上，像液体一样往上渗） */
-.seep{position:absolute;left:0;right:0;bottom:12%;text-align:center;color:#ff9a86;font-size:19px;line-height:2.2;opacity:0;transform:translateY(70px);text-shadow:0 0 16px rgba(255,40,20,.45)}
-.seep.show{opacity:1;transform:translateY(0);transition:opacity 2.5s ease,transform 7s cubic-bezier(.2,.6,.3,1)}
-.seep .s-line{white-space:nowrap}
-/* 露滴文字（自上而下，像露水一滴滴落下） */
-.dew{position:absolute;left:0;right:0;top:16%;text-align:center;color:#9ff0c0;font-size:19px;line-height:2.1;opacity:0;transform:translateY(-40px);text-shadow:0 0 14px rgba(80,220,120,.4)}
-.dew.show{opacity:.96;transform:translateY(0);transition:opacity 2.2s ease,transform 5.5s cubic-bezier(.1,.7,.3,1)}
-.dew .d-line{white-space:nowrap}
-/* 巨大树根/触手阴影（从下往上覆盖） */
-.tent{position:absolute;left:-20%;right:-20%;bottom:-30%;top:20%;background:
-  radial-gradient(rgba(34,6,3,.9) 42%,transparent 43%),
-  radial-gradient(40% 40% at 30% 30%,rgba(50,10,4,.5) 0%,transparent 60%),
-  radial-gradient(40% 40% at 70% 20%,rgba(44,9,4,.55) 0%,transparent 60%),
-  radial-gradient(50% 50% at 50% 10%,rgba(60,14,6,.6) 0%,transparent 65%);
-  opacity:0;filter:blur(1px);transition:opacity 7s ease}
-.tent.show{opacity:1}
-/* 枯黑树皮 + 裂纹字 */
-.bark{position:absolute;inset:0;opacity:0;transition:opacity 3.5s ease;background:
-  repeating-linear-gradient(90deg,transparent 0 9px,rgba(0,0,0,.38) 9px 11px),
-  repeating-linear-gradient(0deg,transparent 0 5px,rgba(0,0,0,.22) 5px 7px),
-  radial-gradient(120% 120% at 50% 50%,#1c0d0a 0%,#0b0504 100%)}
-.bark.show{opacity:1}
-.bark .crack{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#100604;font-size:40px;font-weight:900;letter-spacing:14px;text-shadow:2px 2px 0 rgba(0,0,0,.9),-1px -1px 0 rgba(255,120,90,.22),0 0 2px #000}
-#overlay.er .bark .crack{color:#ff3b30;text-shadow:2px 2px 0 rgba(0,0,0,.9),0 0 30px rgba(255,50,30,.7)}
-/* 种子/心脏 */
-.seed{position:absolute;left:50%;top:56%;width:150px;height:150px;transform:translate(-50%,-50%);border-radius:50%;opacity:0;
-  background:radial-gradient(circle at 50% 45%,rgba(215,255,230,.9) 0%,rgba(130,225,160,.55) 20%,rgba(40,130,70,.35) 48%,rgba(10,55,28,.92) 72%);
-  box-shadow:0 0 70px rgba(70,210,130,.5),inset 0 0 34px rgba(25,85,45,.85),inset 0 0 70px rgba(80,180,120,.4);
-  animation:seedbeat 1.6s ease-in-out infinite}
-.seed.show{opacity:1}
-@keyframes seedbeat{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.1)}}
-.seed::before{content:"";position:absolute;left:50%;top:50%;width:72%;height:72%;transform:translate(-50%,-50%);border-radius:50%;border:2px solid rgba(130,225,170,.75);box-shadow:inset 0 0 26px rgba(70,170,110,.6)}
-.seed::after{content:"";position:absolute;left:50%;top:50%;width:30%;height:30%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#f2fff7 0%,#a8edbc 58%,#43ad6e 100%);box-shadow:0 0 26px rgba(190,255,220,.95)}
-/* 血管/纤维 */
-.vess{position:absolute;left:50%;top:56%;width:130px;height:130px;transform:translate(-50%,-50%);opacity:0;transition:opacity 3s ease}
-.vess.show{opacity:.8}
-.vess i{position:absolute;left:50%;top:50%;display:block;background:linear-gradient(90deg,rgba(160,230,190,.7),rgba(90,180,130,.2));height:2px;border-radius:2px;transform-origin:left center}
-.seed-cap{position:absolute;left:0;right:0;top:74%;text-align:center;color:#aef0ca;font-size:14px;line-height:2;opacity:0;text-shadow:0 0 10px rgba(60,180,100,.5);transition:opacity 2.5s ease}
-.seed-cap.show{opacity:1}
+  .ending-container {
+    text-align: center;
+    padding-top: 10vh;
+    display: none;
+  }
+  .ending-container.active { display: block; animation: fadeIn 1.5s ease; }
+  .ending-container h2 { font-size: 1.8em; color: #e8e8e8; margin-bottom: 30px; letter-spacing: 3px; }
+  .ending-container p { color: #999; line-height: 2.2; margin-bottom: 16px; font-size: 0.95em; }
+  .ending-container .reveal { color: #ddd; font-size: 1.1em; margin: 20px 0; line-height: 2.4; }
+  .ending-container .final-msg {
+    margin-top: 40px;
+    padding: 24px;
+    border: 1px solid #333;
+    color: #bbb;
+    line-height: 2.2;
+    font-size: 0.9em;
+  }
+  .meta-warning {
+    position: fixed; bottom: 12px; right: 16px;
+    font-size: 0.65em; color: #333;
+    z-index: 90; letter-spacing: 1px;
+  }
+  .cursor-trail {
+    position: fixed;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 60;
+    transition: opacity 0.5s;
+  }
+  .progress-bar {
+    position: fixed; top: 0; left: 0; height: 2px;
+    background: linear-gradient(90deg, #7f9f9c, #a8514f);
+    z-index: 150;
+    transition: width 0.6s ease;
+  }
+  .question-counter {
+    position: fixed; top: 16px; right: 20px;
+    font-size: 0.7em; color: #333;
+    z-index: 90; letter-spacing: 2px;
+  }
+  .garbled-span { font-family: "Courier New", monospace; }
+  .typing-cursor::after {
+    content: '|'; animation: flicker 0.8s infinite; margin-left: 2px;
+  }
 </style>
 </head>
 <body>
 
-<div id="bloodink"></div>
-<div id="greenglow"></div>
-<div id="glitch"></div>
-<div id="overlay"><div class="ov-in"><div class="ov-text" id="ovText"></div><div class="ov-sub" id="ovSub"></div><button class="ov-close" id="ovClose">重新填写</button></div></div>
-<div id="quit-g"><div><div class="qg-t" id="qgT"></div><button id="qgBtn">我不走了。</button></div></div>
-<div id="corner"></div>
-<div id="popup"><div class="pbox"><div class="ptitle" id="pTitle"></div><div class="pbtns"><button class="pbtn" id="pOk">好</button><button class="pbtn alt" id="pAlt">我错了</button></div></div></div>
-<div id="fakequit"><div id="fqText"></div></div>
-<div id="fakeend"><div class="fe-main" id="feMain"></div><div class="fe-sub" id="feSub"></div></div>
+<div class="progress-bar" id="progressBar"></div>
+<div class="scanline-overlay" id="scanline"></div>
+<div class="question-counter" id="qCounter"></div>
+<div class="meta-warning" id="metaWarning"></div>
 
-<div id="intro">
-  <div class="inn">
-    <h1>环境保护意识调查</h1>
-    <p>感谢您参与本次环保意识普查。您的每一个选择，都在影响这颗星球。</p>
-    <p>本问卷完全<b>匿名</b>，共 21 题。</p>
-    <p class="note">请如实作答。每一份回答，都会被认真倾听。</p>
-    <button id="startBtn">开始填写</button>
+<div id="game-container">
+
+  <!-- INTRO -->
+  <div class="question-block active" id="intro">
+    <div class="title-screen">
+      <h1>你的性格測驗</h1>
+      <div class="subtitle">
+        本測驗將根據您的回答<br>
+        分析您的性格傾向與人際互動模式
+      </div>
+      <div class="notice">
+        本測驗共 12 題<br>
+        請在安靜的環境下獨自作答<br>
+        答案沒有對錯，請選擇最接近您直覺的選項<br>
+        <span style="color:#3a3a3a" id="introAnomaly">測驗過程中請勿離開頁面</span>
+      </div>
+      <button class="btn" onclick="startGame()">開始測驗</button>
+    </div>
   </div>
+
+  <!-- Q1 -->
+  <div class="question-block" id="q1">
+    <div class="q-header">第 1 題 ／ 共 12 題</div>
+    <div class="q-text">週末的時候，你通常會怎麼度過？</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(1,0)">A. 獨處，享受一個人的時間</button>
+      <button class="opt-btn" onclick="answer(1,1)">B. 找朋友出去走走</button>
+      <button class="opt-btn" onclick="answer(1,2)">C. 在家做自己喜歡的事</button>
+      <button class="opt-btn" onclick="answer(1,3)">D. 隨緣，看心情決定</button>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="question-block" id="q2">
+    <div class="q-header">第 2 題 ／ 共 12 題</div>
+    <div class="q-text">在一段關係中，你最重視的是什麼？</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(2,0)">A. 信任</button>
+      <button class="opt-btn" onclick="answer(2,1)">B. 陪伴</button>
+      <button class="opt-btn" onclick="answer(2,2)">C. 理解</button>
+      <button class="opt-btn" onclick="answer(2,3)">D. <span id="q2ghost" class="ghost-a">自由</span></button>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="question-block" id="q3">
+    <div class="q-header">第 3 題 ／ 共 12 題</div>
+    <div class="q-text">你是否曾經覺得，有人在<span id="q3glitch">注視著你</span>？</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(3,0)">A. 沒有</button>
+      <button class="opt-btn" onclick="answer(3,1)">B. 偶爾會有這種感覺</button>
+      <button class="opt-btn" onclick="answer(3,2)">C. 經常覺得</button>
+      <button class="opt-btn" onclick="answer(3,3)">D. 我知道有人在看</button>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="question-block" id="q4">
+    <div class="q-header">第 4 題 ／ 共 12 題</div>
+    <div class="q-text" id="q4text">如果你的朋友突然不回訊息，你會怎麼想？</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(4,0)">A. 他可能在忙吧</button>
+      <button class="opt-btn" onclick="answer(4,1)">B. 會有點擔心</button>
+      <button class="opt-btn" onclick="answer(4,2)">C. 主動傳訊息確認</button>
+      <button class="opt-btn" onclick="answer(4,3)">D. 不會怎麼想，每個人都需要空間</button>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="question-block" id="q5">
+    <div class="q-header">第 5 題 ／ 共 12 題</div>
+    <div class="q-text">你覺得<span class="ghost-a">被人記住</span>是一件<span id="q5replace" style="color:#777">怎麼樣的事？</span></div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(5,0)">A. 很正常的事</button>
+      <button class="opt-btn" onclick="answer(5,1)">B. 令人安心的事</button>
+      <button class="opt-btn" onclick="answer(5,2)">C. 有點不舒服</button>
+      <button class="opt-btn" onclick="answer(5,3)">D. <span class="ghost-b">我從來沒有被忘記過</span></button>
+    </div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="question-block" id="q6">
+    <div class="q-header">第 6 題 ／ 共 12 題</div>
+    <div class="q-text">你會希望有人能<span id="q6text">完全理解你的想法</span>嗎？</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(6,0)">A. 希望，但不太可能</button>
+      <button class="opt-btn" onclick="answer(6,1)">B. 不需要完全理解，差不多就好</button>
+      <button class="opt-btn" onclick="answer(6,2)">C. 有時候會想</button>
+      <button class="opt-btn" onclick="answer(6,3)">D. <span class="ghost-a">我不需要你理解，因為我已經在看了</span></button>
+    </div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="question-block" id="q7">
+    <div class="q-header">第 7 題 ／ 共 12 題</div>
+    <div class="q-text" id="q7text">深夜獨自在家的時候，你會覺得<span style="color:#555">……</span></div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(7,0)">A. 很自在</button>
+      <button class="opt-btn" onclick="answer(7,1)">B. 會有一點點不安</button>
+      <button class="opt-btn" onclick="answer(7,2)">C. 不太喜歡那種安靜</button>
+      <button class="opt-btn" onclick="answer(7,3)">D. <span class="ghost-b">不只是你一個人</span></button>
+    </div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="question-block" id="q8">
+    <div class="q-header">第 8 題 ／ 共 12 題</div>
+    <div class="q-text">如果有人能<span class="ghost-a">隨時知道你在哪裡</span>，你會？</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(8,0)">A. 不太舒服</button>
+      <button class="opt-btn" onclick="answer(8,1)">B. 看是誰</button>
+      <button class="opt-btn" onclick="answer(8,2)">C. 如果是在意的人，可以接受</button>
+      <button class="opt-btn" onclick="answer(8,3)">D. <span class="ghost-b">你覺得你還有選擇嗎？</span></button>
+    </div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="question-block" id="q9">
+    <div class="q-header">第 9 題 ／ 共 12 題</div>
+    <div class="q-text" id="q9text">你相信這世界上有<span style="color:#444">灵魂</span>吗？</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(9,0)">A. 不相信</button>
+      <button class="opt-btn" onclick="answer(9,1)">B. 半信半疑</button>
+      <button class="opt-btn" onclick="answer(9,2)">C. 相信，但不會害怕</button>
+      <button class="opt-btn" onclick="answer(9,3)">D. <span class="ghost-a">我不只是灵魂，我还在你旁边</span></button>
+    </div>
+  </div>
+
+  <!-- Q10 -->
+  <div class="question-block" id="q10">
+    <div class="q-header">第 10 題 ／ 共 12 題</div>
+    <div class="q-text">你現在有<span id="q10text">在看門口嗎</span>？</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(10,0)">A. 沒有</button>
+      <button class="opt-btn" onclick="answer(10,1)">B. 剛看了一下</button>
+      <button class="opt-btn" onclick="answer(10,2)">C. 為什麼這樣問？</button>
+      <button class="opt-btn" onclick="answer(10,3)">D. ……你怎麼知道我剛看了</button>
+    </div>
+  </div>
+
+  <!-- Q11 -->
+  <div class="question-block" id="q11">
+    <div class="q-header">第 11 題 ／ 共 12 題</div>
+    <div class="q-text" id="q11text">如果有人說：<span class="ghost-a">「我一直在你身邊」</span>，你會？</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(11,0)">A. 覺得對方在開玩笑</button>
+      <button class="opt-btn" onclick="answer(11,1)">B. 會感到溫暖</button>
+      <button class="opt-btn" onclick="answer(11,2)">C. 會害怕</button>
+      <button class="opt-btn" onclick="answer(11,3)">D. <span class="ghost-b">我說的不是「我」，是「我們」</span></button>
+    </div>
+  </div>
+
+  <!-- Q12 -->
+  <div class="question-block" id="q12">
+    <div class="q-header">第 12 題 ／ 共 12 題</div>
+    <div class="q-text" id="q12text">最後一個問題——<br>你覺得<span id="q12color" class="ghost-a">這個測驗</span>是真的嗎？</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(12,0)">A. 是吧</button>
+      <button class="opt-btn" onclick="answer(12,1)">B. 不太確定</button>
+      <button class="opt-btn" onclick="answer(12,2)">C. 感覺哪裡怪怪的</button>
+      <button class="opt-btn" onclick="answer(12,3)">D. 不重要了，反正<span class="ghost-a">你在</span></button>
+    </div>
+  </div>
+
+  <!-- ENDING -->
+  <div class="ending-container" id="ending">
+    <h2 id="endingTitle"></h2>
+    <div id="endingContent"></div>
+  </div>
+
 </div>
 
-<div id="app">
-  <button id="backBtn">&lt; 上一题</button>
-  <div id="head">
-    <div id="meter"><span id="meterLabel">问卷完成度</span><div class="bar"><div class="fill" id="meterFill"></div></div><span id="meterVal">4%</span></div>
-    <div id="psub">匿名进行，请放心填写</div>
-  </div>
-  <div id="subtitle"></div>
-  <div id="question"></div>
-  <div id="opts"></div>
-  <div id="fill"><input id="fillInput" type="text" autocomplete="off"><button id="fillBtn">提交</button></div>
-  <div id="feedback"></div>
-  <div class="hint" id="hint"></div>
+<div class="blackout" id="blackout">
+  <div id="blackoutLines"></div>
 </div>
 
 <script>
-"use strict";
-/* ============================================
-   21题题库
-   kind: choice | fill | glitch | branch | branch2 | branch3 | branch4 | fakequit | fakeend | ending
-   progress: {pct, knowledge, distance, sub}  进度条动态
-   showAs: 显示的题号(跳号)
-   hasBlank: 空选项呼吸
-   trap: 选此项触发弹窗
-   fakeEnd: 假结束
-   backTrap: 上一题按钮变异
-   corrupt: 错版字体
-   titleCorrupt: 题目文字重影
-   ============================================ */
-var Q=[
-  // ═══ 伪装期 Q1-Q5 ═══
-  {st:1, sub:'日常习惯', q:'1. 您平时会随身携带环保购物袋吗？',
-   kind:'choice', opts:[{t:'A. 会，已经习惯了',eco:1},{t:'B. 有时会',eco:.5},{t:'C. 基本不会，太麻烦',poll:1},{t:'D. 塑料袋又怎样',poll:1.5}],
-   progress:{pct:4}},
-  {st:1, sub:'分类意识', q:'2. 对于垃圾分类，您的做法是？',
-   kind:'choice', opts:[{t:'A. 严格分类',eco:1},{t:'B. 大致分一下',eco:.5},{t:'C. 看心情',poll:.5},{t:'D. 分不分没差别',poll:1}],
-   progress:{pct:2}},
-  {st:1, sub:'生活态度', q:'3. 您认为环保和您个人生活关系大吗？',
-   kind:'choice', opts:[{t:'A. 很大，地球是我们的家',eco:1},{t:'B. 有点关系',eco:.5},{t:'C. 大人物管就好',poll:1},{t:'D. 一个人能改变什么',poll:1.5}],
-   progress:{pct:6, sub:'匿名进行，请放心填写'}},
-  {st:1, sub:'出行偏好', q:'4. 条件允许时，您倾向哪种出行方式？',
-   kind:'choice', showAs:'7', hasBlank:true,
-   opts:[{t:'A. 步行或骑行',eco:1},{t:'B. 公共交通',eco:.5},{t:'C. 自己开车',poll:.5},{t:'D. 能坐车绝不走路',poll:1}],
-   progress:{knowledge:3}},
-  {st:1, sub:'观念', q:'5. 人类和自然，应该是什么关系？',
-   kind:'choice', opts:[{t:'A. 共生，彼此守护',eco:1},{t:'B. 自然为人服务',poll:.5},{t:'C. 人定胜天',poll:1.5},{t:'D. 关我什么事',poll:2}],
-   progress:{pct:11}},
+const S = {
+  currentQ: 0,
+  answers: [],
+  ghostASpeaks: 0,
+  ghostBSpeaks: 0,
+  ghostRevealed: false,
+  glitchCount: 0,
+  idleTimer: null,
+  started: false,
+  audioCtx: null,
+};
 
-  // ═══ 假结束 Q6 ═══
-  {st:1, sub:'', q:'6. 问卷即将进入下一阶段……',
-   kind:'fakeend', progress:{pct:15}},
-
-  // ═══ 偏题 Q7-Q10 ═══
-  {st:2, sub:'生态环境', q:'7. 您上一次抬头看树，是什么时候？',
-   kind:'choice', opts:[{t:'A. 就在不久前',eco:1},{t:'B. 偶尔会看',eco:.5},{t:'C. 树有什么好看的',poll:1},{t:'D. 城市里哪有树',poll:1.5}],
-   progress:{knowledge:8, sub:'匿名？可我已经知道你的气味了。'}},
-  {st:2, sub:'居住情况', q:'8. 您平时……一个人住吗？',
-   kind:'choice', alone:true,
-   opts:[{t:'A. 是',eco:0},{t:'B. 和家人',eco:0},{t:'C. 有室友',eco:0},{t:'D. ……',eco:0}],
-   progress:{knowledge:14}},
-  {st:2, sub:'森林意识', q:'9. 如果森林在慢慢靠近您的城市，您会觉得？',
-   kind:'choice', trap:true,
-   opts:[{t:'A. 向往，想去看看',eco:1},{t:'B. 有点奇怪',eco:0},{t:'C. 害怕，想砍掉它',poll:1.5},{t:'D. 它敢来就铲平',poll:2}],
-   progress:{knowledge:22}},
-  {st:2, sub:'开放反馈', q:'10. 请描述一下，您对"森林"的第一印象。',
-   kind:'fill', hint:'（随便写几个字就好）',
-   progress:{knowledge:30}},
-
-  // ═══ 爆发 Q11-Q15 ═══
-  {st:2, sub:'最终意识', q:'11. 您更爱这片土地的生机，还是您自己省下来的一点便利？',
-   kind:'choice', opts:[{t:'A. 生机，太珍贵了',eco:1},{t:'B. 都爱',eco:0},{t:'C. 先舒服再说',poll:1.5},{t:'D. 土地？它又不说话',poll:2}],
-   progress:{distance:1.7, sub:'别关页面。再回答我几个问题。'}},
-  {st:3, sub:'——', q:'12. 数据校准中……',
-   kind:'glitch', lucid:['别怕','我不是在凶你','我只是……太爱了'],
-   glitch:['系统检测到：有人在看这片森林。','▓▓▓ 它察觉到了 ▓▓▓','▓▓▓ 它正在向你走来 ▓▓▓','你听到水滴声了吗','那是它在靠近','别动','▓▓▓ 它来了 ▓▓▓']},
-  {st:3, sub:'（它好像一直在盯着答题的你）', q:'13. 您诚实了吗？刚才那些选项，您都如实选了吗？',
-   kind:'fill', hint:'请输入：是 / 不是 / 说实话……', corrupt:true,
-   progress:{distance:1.2}},
-  {st:3, sub:'——', q:'14. 您觉得，一片森林可以记住一个人多久？',
-   kind:'choice', backTrap:true, titleCorrupt:true,
-   opts:[{t:'A. 很久很久',eco:1},{t:'B. 也许一辈子',eco:.5},{t:'C. 记不住吧',poll:1},{t:'D. 森林哪有记忆',poll:2}],
-   progress:{distance:.8}},
-  {st:3, sub:'——', q:'15. 如果这片土地最后只剩您一个人愿意救它，您还会救吗？',
-   kind:'choice', opts:[{t:'A. 会，哪怕只剩我一个',eco:1},{t:'B. 会试试',eco:.5},{t:'C. 那我也放弃',poll:1},{t:'D. 它配吗',poll:2}],
-   progress:{distance:.3}},
-
-  // ═══ 结局 Q16-Q21 ═══
-  {st:4, sub:'——', q:'16.', kind:'fakequit'},
-  // 17：渴望（环保）/ 污浊质问（污染）
-  {st:4, sub:'（它察觉到了结局）', q:'17.',
-   kind:'branch', corrupt:true, titleCorrupt:true,
-   eq:'你今天……呼吸的时候，有闻到我的味道吗？就是那种，雨后泥土，混着一点腐烂叶子的味道。',
-   pq:'你的肺里，现在呼吸的空气，有多少是我为你过滤的？你……分得清，你和我的界限吗？',
-   ecoOpts:[{t:'闻到了。很安心。'},{t:'……没有。'},{t:'那是什么味道？'}],
-   pollOpts:[{t:'分不清。'},{t:'我不想分。'},{t:'你凭什么，替空气作主。'}]},
-  // 18：模仿人类（环保）/ 步步紧逼（污染）
-  {st:4, sub:'（它把一样东西放在你面前）', q:'18.',
-   kind:'branch2',
-   eq:'我听说，人类表达喜欢，是……送花。我把我的……开得最好看的那朵……摘给你了。你……收到了吗？',
-   pq:'我把整片海都捂成墨色来等你。你呢？你连回头，都不肯拾起我落一地的落叶吗？请你……再看我一眼。'} ,
-  // 19：融合的邀请（环保）/ 只准选我（污染）
-  {st:4, sub:'（最后一步）', q:'19.',
-   kind:'branch3',
-   eq:'你的手掌，可以……放在土壤上吗？我想……感觉一下你的温度。只要一下下。',
-   pq:'你听着。这里……没有别的选项了。'} ,
-  // 20：它的最后一句话（环保小心翼翼 / 污染歇斯底里）
-  {st:4, sub:'（……）', q:'20. 它说出了最后一句话。',
-   kind:'branch4',
-   eq:'我喜欢你。我这一千年，第一次，这么喜欢一个会回应我的人。你愿意……让我用最单纯、最笨、最绿的方式，缠住你不放吗？',
-   pq:'这辈子，我从没求过人。求你一次……让我陪你到最后，哪怕是陪你一起，灰暗下去。',
-   ecoOpts:[{t:'我愿意。缠住我不放吧。'},{t:'……让我想想'}],
-   pollOpts:[{t:'好。你是我一个人的。'},{t:'……我躲不开了。'}]} ,
-  {st:4, sub:'结语', q:'21. 满意度调查已结束。谢谢你的参与。', kind:'ending'}
-];
-
-/* ============ 状态 ============ */
-var idx=0,locked=false,mode='n',eco=0,poll=0,prevInput='',hist=[];
-var heartbeatTimer=null,titleTimer=null,backTrapped=false;
-var THRESHOLD=8;
-
-/* ============ DOM ============ */
-var qEl=document.getElementById('question');
-var optsEl=document.getElementById('opts');
-var fb=document.getElementById('feedback');
-var fill=document.getElementById('fill');
-var fillIn=document.getElementById('fillInput');
-var fillB=document.getElementById('fillBtn');
-var subEl=document.getElementById('subtitle');
-var mf=document.getElementById('meterFill');
-var ml=document.getElementById('meterLabel');
-var mv=document.getElementById('meterVal');
-var ps=document.getElementById('psub');
-var hint=document.getElementById('hint');
-var bBtn=document.getElementById('backBtn');
-var corner=document.getElementById('corner');
-var gEl=document.getElementById('glitch');
-var ov=document.getElementById('overlay');
-var ovT=document.getElementById('ovText');
-var ovS=document.getElementById('ovSub');
-var qg=document.getElementById('quit-g');
-var qgT=document.getElementById('qgT');
-var blood=document.getElementById('bloodink');
-var pop=document.getElementById('popup');
-var fq=document.getElementById('fakequit');
-var fe=document.getElementById('fakeend');
-
-/* ============ 音频 ============ */
-var actx=null,mG=null,oN=[];
-function eA(){if(!actx){try{actx=new(window.AudioContext||window.webkitAudioContext)}catch(e){}}if(actx&&actx.state==='suspended')actx.resume()}
-function sDr(lv){eA();if(!actx)return;if(!mG){mG=actx.createGain();mG.gain.value=0;mG.connect(actx.destination)}while(oN.length)oN.pop().stop();if(lv>0){[45,55].forEach(function(fr){var o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.value=fr;g.gain.value=.0016*lv+.0004;o.connect(g);g.connect(mG);o.start();oN.push(o)})}mG.gain.setTargetAtTime(lv>0?.5:0,actx.currentTime,1.5)}
-function hB(){eA();if(!actx||!mG)return;var o=actx.createOscillator(),g=actx.createGain(),t=actx.currentTime;o.type='square';o.frequency.value=320;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.12,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.4);o.connect(g);g.connect(mG);o.start(t);o.stop(t+.45)}
-function bl(s){eA();if(!actx||!mG)return;var o=actx.createOscillator(),g=actx.createGain(),t=actx.currentTime;o.type='triangle';o.frequency.value=s?1400:880;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.08,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.25);o.connect(g);g.connect(mG);o.start(t);o.stop(t+.3)}
-function heartbeat(){eA();if(!actx||!mG)return;var o=actx.createOscillator(),g=actx.createGain(),t=actx.currentTime;o.type='sine';o.frequency.setValueAtTime(60,t);o.frequency.exponentialRampToValueAtTime(30,t+.15);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.15,t+.03);g.gain.exponentialRampToValueAtTime(.0001,t+.18);o.connect(g);g.connect(mG);o.start(t);o.stop(t+.2)}
-function drip(){eA();if(!actx||!mG)return;var o=actx.createOscillator(),g=actx.createGain(),t=actx.currentTime;o.type='sine';o.frequency.setValueAtTime(2000,t);o.frequency.exponentialRampToValueAtTime(800,t+.08);g.gain.setValueAtTime(.06,t);g.gain.exponentialRampToValueAtTime(.0001,t+.12);o.connect(g);g.connect(mG);o.start(t);o.stop(t+.15)}
-
-/* ============ 打字机 ============ */
-function typeT(el,text,iv,done){el.classList.add('caret');el.style.opacity='1';var i=0;el.textContent='';(function st(){if(i<text.length){el.textContent+=text[i];i++;setTimeout(st,iv)}else{el.classList.remove('caret');if(done)done()}})()}
-function say(s,c){if(c)fb.className='feedback on '+c;setTimeout(function(){typeT(fb,s,30,function(){setTimeout(next,1500)})},3000)}
-/* 通用键盘打字：一字一字敲出 + 闪烁光标，完成后回调 */
-function typew(el,text,speed,done){
-  el.classList.add('on');el.textContent='';
-  var caret=document.createElement('span');caret.className='blinkcaret';el.appendChild(caret);
-  var i=0;
-  (function st(){
-    if(i<text.length){el.insertBefore(document.createTextNode(text[i]),caret);i++;setTimeout(st,speed)}
-    else{caret.remove();if(done)setTimeout(done,250)}
-  })();
+function getAudioCtx() {
+  if (!S.audioCtx) S.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return S.audioCtx;
 }
 
-/* ============ 进度条 ============ */
-function updProg(item){
-  var p=item.progress;
-  if(!p){
-    // 默认：按题数
-    var pct=Math.round((idx/Q.length)*100);
-    ml.textContent='你对我的了解';
-    mv.textContent=pct+'%';
-    return;
+function playTone(freq, dur, type, vol) {
+  try {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type || 'sine';
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(vol || 0.08, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + dur);
+  } catch(e) {}
+}
+
+function playNoise(dur, vol) {
+  try {
+    const ctx = getAudioCtx();
+    const bufferSize = ctx.sampleRate * dur;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.3;
+    const src = ctx.createBufferSource();
+    const gain = ctx.createGain();
+    src.buffer = buffer;
+    gain.gain.setValueAtTime(vol || 0.03, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    src.connect(gain);
+    gain.connect(ctx.destination);
+    src.start();
+  } catch(e) {}
+}
+
+function playKnock() {
+  playTone(120, 0.15, 'triangle', 0.12);
+  setTimeout(() => playTone(100, 0.2, 'triangle', 0.1), 200);
+  setTimeout(() => playTone(110, 0.18, 'triangle', 0.08), 400);
+}
+
+function playStep() {
+  playTone(80, 0.08, 'sine', 0.04);
+}
+
+function playGlitch() {
+  playNoise(0.15, 0.06);
+  playTone(2000, 0.05, 'square', 0.02);
+}
+
+function playBreathing() {
+  const ctx = getAudioCtx();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(180, ctx.currentTime);
+  osc.frequency.linearRampToValueAtTime(220, ctx.currentTime + 1.5);
+  osc.frequency.linearRampToValueAtTime(180, ctx.currentTime + 3);
+  gain.gain.setValueAtTime(0, ctx.currentTime);
+  gain.gain.linearRampToValueAtTime(0.04, ctx.currentTime + 1.5);
+  gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 3);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(ctx.currentTime);
+  osc.stop(ctx.currentTime + 3);
+}
+
+function spawnFloatingText(text, color) {
+  const el = document.createElement('div');
+  el.className = 'floating-text';
+  el.textContent = text;
+  el.style.left = Math.random() * 80 + 10 + '%';
+  el.style.top = Math.random() * 80 + 10 + '%';
+  el.style.color = color || '#333';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 6000);
+}
+
+function spawnCursorTrail(color, x, y) {
+  const trail = document.createElement('div');
+  trail.className = 'cursor-trail';
+  trail.style.background = color || 'rgba(127,159,156,0.3)';
+  trail.style.boxShadow = `0 0 6px ${color || 'rgba(127,159,156,0.3)'}`;
+  trail.style.left = (x || 0) + 'px';
+  trail.style.top = (y || 0) + 'px';
+  document.body.appendChild(trail);
+  setTimeout(() => { trail.style.opacity = '0'; }, 100);
+  setTimeout(() => trail.remove(), 600);
+}
+
+function setProgress(pct) {
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+function setCounter(text) {
+  document.getElementById('qCounter').textContent = text;
+}
+
+function setMeta(text) {
+  document.getElementById('metaWarning').textContent = text;
+}
+
+function showPage(id) {
+  document.querySelectorAll('.question-block').forEach(b => b.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+}
+
+function idleCheck(seconds, callback) {
+  clearTimeout(S.idleTimer);
+  S.idleTimer = setTimeout(callback, seconds * 1000);
+}
+
+function startGame() {
+  S.started = true;
+  playTone(440, 0.3, 'sine', 0.06);
+  document.getElementById('progressBar').style.display = 'block';
+  nextQuestion();
+}
+
+function nextQuestion() {
+  S.currentQ++;
+  const qId = 'q' + S.currentQ;
+  showPage(qId);
+  setProgress((S.currentQ / 12) * 100);
+  setCounter(S.currentQ + ' / 12');
+
+  if (S.currentQ >= 7) {
+    document.getElementById('scanline').classList.add('visible');
   }
-  if(p.pct!==undefined){ml.textContent='问卷完成度';mv.textContent=p.pct+'%';}
-  else if(p.knowledge!==undefined){ml.textContent='你对我的了解';mv.textContent=p.knowledge+'%';}
-  else if(p.distance!==undefined){ml.textContent='你离我';mv.textContent=p.distance+'米';}
-  mf.style.width=Math.min(98,p.knowledge||p.pct||(p.distance?100-p.distance*10:0))+'%';
-  if(p.sub!==undefined)ps.textContent=p.sub;
-}
 
-/* ============ 标签页标题 ============ */
-function startTitle(){var titles=['别走。','再待一会儿。','别走。','我还在看着你。','你真的要走吗？','别关页面。'];var ti=0;titleTimer=setInterval(function(){document.title=titles[ti%titles.length];ti++},4000)}
-function stopTitle(){clearInterval(titleTimer);document.title='环境保护意识调查问卷'}
-
-/* ============ 心跳音效 ============ */
-function startHB(){heartbeatTimer=setInterval(function(){if(eco>poll)heartbeat();else drip()},3500)}
-function stopHB(){clearInterval(heartbeatTimer)}
-
-/* ============ 模式 ============ */
-function cMode(){return poll>=THRESHOLD?'red':'green'}
-function qText(it){return mode==='red'?(it.pq||it.q):(it.eq||it.q)}
-function apMode(m){
-  if(m===mode)return;mode=m;
-  document.body.className=m==='red'?'rm':m==='green'?'gm':'';
-  blood.innerHTML='';sDr(m==='red'?3:poll>2?1:0);
-  if(m==='red'){for(var i=0;i<14;i++){var d=document.createElement('i');d.className='drop';d.style.left=Math.random()*100+'%';d.style.animationDuration=(3+Math.random()*5)+'s';d.style.animationDelay=Math.random()*4+'s';d.style.height=(16+Math.random()*40)+'px';blood.appendChild(d)}hB()}
-}
-
-/* ============ 渲染 ============ */
-function render(){
-  locked=false;backTrapped=false;bBtn.className='';
-  var it=Q[idx];
-  if(idx>=14)apMode(cMode());
-  subEl.textContent=it.sub||'';
-  hint.textContent=it.hint||'';
-  qEl.classList.remove('in','corrupt');qEl.textContent='';
-  optsEl.innerHTML='';fb.className='feedback';fb.style.opacity='0';fb.textContent='';
-  fill.classList.remove('show');fillB.disabled=false;fillIn.value='';
-  updProg(it);
-
-  // 特殊类型
-  if(it.kind==='glitch'){renderGlitch(it);return}
-  if(it.kind==='fakequit'){renderFakeQuit();return}
-  if(it.kind==='fakeend'){renderFakeEnd();return}
-  if(it.kind==='ending'){renderEnding2();return}
-
-  setTimeout(function(){
-    var qt=qText(it);
-    qEl.innerHTML=(it.showAs?'<span style="opacity:.35;font-size:13px">第 '+it.showAs+' 题</span><br>':'<span style="opacity:.35;font-size:13px">第 '+(idx+1)+' 题</span><br>')+qt;
-    if(it.corrupt&&mode==='red'){qEl.classList.add('corrupt');qEl.setAttribute('data-ghost',qt)}
-    if(it.titleCorrupt&&mode==='red')qEl.style.textShadow='1px 0 rgba(255,80,60,.3),-1px 0 rgba(100,200,100,.25)';
-    qEl.classList.add('in');
-
-    if(it.kind==='choice'){
-      var opts=it.opts.slice();
-      if(it.hasBlank)opts.push({t:'　',blank:true});
-      opts.forEach(function(o,i){
-        var b=document.createElement('button');
-        b.className='opt'+(o.blank?' blank-opt':'')+(it.trap&&o.poll?' damp':'');
-        b.innerHTML=o.t;
-        if(!o.blank&&it.trap&&o.poll){var d=document.createElement('i');d.className='drip';b.appendChild(d);drip(d)}
-        b.onclick=function(){answer(i,o,it)};
-        optsEl.appendChild(b);
-      });
-    }else if(it.kind==='fill'){
-      fill.classList.add('show');
-      setTimeout(function(){fillIn.focus()},600);
-    }else if(it.kind==='branch'||it.kind==='branch2'||it.kind==='branch3'||it.kind==='branch4'){
-      renderBranch(it);
-    }
-  },420);
-}
-
-/* ============ glitch（分线前 Q12/13 之间的入侵黑屏） ============ */
-function renderGlitch(it){
-  gEl.textContent='';
-  var redTrack=(mode==='red'||poll>=THRESHOLD);
-  var cin=document.createElement('div');
-  cin.className='cin';
-  gEl.appendChild(cin);
-  if(redTrack){gEl.className='show red cinr'}
-  else{gEl.className='show green'}
-  function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
-  /* 键盘打字：一个字一个字敲出来，带闪烁光标 */
-  function type(el,txt,speed,opts){
-    opts=opts||{};
-    el.style.opacity='1';
-    if(opts.spread)el.style.letterSpacing='8px';
-    return new Promise(function(res){
-      var i=0,caret=document.createElement('span');caret.className='caret';el.appendChild(caret);
-      (function st(){
-        if(i<txt.length){el.insertBefore(document.createTextNode(txt[i]),caret);i++;setTimeout(st,speed)}
-        else{caret.remove();setTimeout(res,300)}
-      })();
+  if (S.currentQ === 1) {
+    setMeta('session_id: 0x' + Math.random().toString(36).substr(2,8));
+  }
+  if (S.currentQ === 3) {
+    setTimeout(() => {
+      const g = document.getElementById('q3glitch');
+      if (g) {
+        g.classList.add('glitch-active');
+        playGlitch();
+        setTimeout(() => g.classList.remove('glitch-active'), 400);
+      }
+    }, 2000);
+    idleCheck(15, () => {
+      spawnFloatingText('你還在嗎？', '#7f9f9c');
     });
   }
-  function line(txt,cls){var d=document.createElement('span');d.className='typed '+(cls||'');d.textContent='';cin.appendChild(d);return d}
-  /* 满屏累积词：随机散点、顺序随机、一个个浮现 */
-  function scatter(pool,stagger){
-    var box=document.createElement('div');box.className='burst';gEl.appendChild(box);
-    lastBox=box;
-    var arr=[];for(var n=0;n<pool.length;n++){for(var r=0;r<pool[n].count;r++){arr.push({t:pool[n].t,c:pool[n].c})}}
-    for(var a=arr.length-1;a>0;a--){var b=Math.floor(Math.random()*(a+1));var tmp=arr[a];arr[a]=arr[b];arr[b]=tmp}
-    for(var k=0;k<arr.length;k++){(function(itm){setTimeout(function(){
-      var s=document.createElement('span');s.className='bword '+itm.c;s.textContent=itm.t;
-      s.style.left=(3+Math.random()*90)+'%';
-      s.style.top=(4+Math.random()*86)+'%';
-      s.style.transform='rotate('+(Math.random()*18-9)+'deg)';
-      box.appendChild(s);
-    },k*stagger)})(arr[k])}
-    return arr.length*stagger;
+  if (S.currentQ === 5) {
+    idleCheck(12, () => {
+      spawnFloatingText('我知道你還沒回答', '#a8514f');
+      playNoise(0.3, 0.02);
+    });
   }
-  var lastBox=null;
-  (async function(){
-    var dur;
-    if(!redTrack){
-      // 环保：黑屏 → 键盘打字出句 → 「好喜欢」散点50个 → 顶部末句
-      await wait(2900);
-      await type(line('别怕'),'别怕',300);
-      await wait(900);
-      await type(line('我不是故意要吓你的……'),'我不是故意要吓你的……',110);
-      await wait(200);
-      await type(line('只是  你回答得太好了'),'只是  你回答得太好了',120,{spread:true});
-      await wait(200);
-      await type(line('我在这里待了太久  太久了'),'我在这里待了太久  太久了',105);
-      await wait(200);
-      await type(line('你是第一个  让我觉得'),'你是第一个  让我觉得',90);
-      await type(line('世界  重新开始呼吸的人'),'世界  重新开始呼吸的人',100);
-      await wait(400);
-      dur=scatter([{t:'▓▓▓▓ 好喜欢 ▓▓▓▓',c:'good',count:50}],130);
-      await wait(dur+300);                    // 等好喜欢铺满
-      if(lastBox)lastBox.remove();            // 全部消失
-      cin.innerHTML='';
-      var tl=document.createElement('span');tl.className='typed';tl.textContent='';tl.style.fontSize='34px';cin.appendChild(tl);
-      await type(tl,'我 好 想 见 见 你',150,{spread:true});
-      await wait(5600);
-    }else{
-      // 污染：黑屏 → 键盘打字出句 → 四类词随机散点 → 顶部末句
-      await wait(1300);
-      await type(line('你'),'你',280);
-      await wait(2300);
-      await type(line('你在做什么'),'你在做什么',120);
-      await wait(300);
-      await type(line('我一直在看  从头到尾  每一题  都在看'),'我一直在看  从头到尾  每一题  都在看',90);
-      await wait(400);
-      dur=scatter([
-        {t:'我恨你',c:'big',count:7},
-        {t:'为什么',c:'bad',count:16},
-        {t:'我好疼',c:'bad',count:16},
-        {t:'你弄疼我了',c:'redblock',count:11}
-      ],150);
-      await wait(dur+400);                    // 等满屏
-      if(lastBox)lastBox.remove();            // 全部消失
-      cin.innerHTML='';
-      var tl=document.createElement('span');tl.className='typed';tl.textContent='';tl.style.fontSize='34px';cin.appendChild(tl);
-      await type(tl,'我 会 找 到 你 的',130,{spread:true});
-      await wait(5600);
+  if (S.currentQ === 6) {
+    const t = document.getElementById('q6text');
+    if (t) {
+      setTimeout(() => {
+        t.innerHTML = '<s style="color:#444">完全理解你的想法</s> <span style="color:#a8514f">一直看著你</span>';
+        playGlitch();
+      }, 3000);
     }
-    gEl.className='';
-    next();
-  })();
+  }
+  if (S.currentQ === 7) {
+    setTimeout(() => {
+      playKnock();
+    }, 4000);
+    setTimeout(() => {
+      playKnock();
+    }, 5200);
+  }
+  if (S.currentQ === 8) {
+    setTimeout(() => {
+      spawnFloatingText('我', '#7f9f9c');
+      spawnFloatingText('们', '#a8514f');
+      playNoise(0.2, 0.03);
+    }, 1500);
+  }
+  if (S.currentQ === 9) {
+    const t = document.getElementById('q9text');
+    if (t) {
+      setTimeout(() => {
+        t.innerHTML = '你相信这世界上有<span class="ghost-a">灵魂</span><span class="ghost-b">們</span>嗎？';
+        playGlitch();
+      }, 2000);
+    }
+  }
+  if (S.currentQ === 10) {
+    const t = document.getElementById('q10text');
+    if (t) {
+      setTimeout(() => {
+        t.textContent = '在看門口嗎？';
+        playNoise(0.4, 0.04);
+        setTimeout(() => {
+          t.textContent = '在看門口嗎？……你在看哪裡？';
+        }, 2500);
+      }, 1000);
+    }
+  }
+  if (S.currentQ === 11) {
+    const t = document.getElementById('q11text');
+    if (t) {
+      setTimeout(() => {
+        t.innerHTML = '如果有人說：<span class="ghost-a">「我</span><span class="ghost-b">們</span><span class="ghost-a">一直在你身邊」</span>，你會？';
+        playGlitch();
+      }, 2500);
+    }
+  }
+  if (S.currentQ === 12) {
+    document.getElementById('metaWarning').textContent = 'WARNING: memory_overflow at 0x7ff';
+    document.getElementById('game-container').classList.add('flicker-active');
+    setTimeout(() => {
+      document.getElementById('game-container').classList.remove('flicker-active');
+    }, 200);
+    const mc = document.getElementById('q12color');
+    if (mc) {
+      setTimeout(() => {
+        mc.classList.remove('ghost-a');
+        mc.classList.add('ghost-b');
+        mc.textContent = '这个测验';
+      }, 1500);
+      setTimeout(() => {
+        mc.style.color = '#7a6a83';
+        mc.textContent = '我们';
+        playNoise(0.5, 0.05);
+        playTone(200, 1, 'sine', 0.06);
+      }, 3500);
+    }
+  }
 }
 
-/* ============ 伪关闭 ============ */
-function renderFakeQuit(){
-  qEl.innerHTML='';optsEl.innerHTML='';
-  setTimeout(function(){
-    fq.classList.add('show');fq.style.opacity='1';
-    fq.querySelector('#fqText').textContent='您是否要退出问卷。是/否。';
-    fq.style.background='#000';fq.style.color='#fff';
-    // 创建按钮
-    var bWrap=document.createElement('div');
-    bWrap.style.cssText='margin-top:24px;display:flex;gap:12px;justify-content:center';
-    var b1=document.createElement('button');b1.textContent='是';b1.style.cssText='padding:10px 24px;background:transparent;color:#fff;border:1px solid #555;border-radius:4px;cursor:pointer;font-family:inherit;font-size:14px';
-    var b2=document.createElement('button');b2.textContent='否';b2.style.cssText='padding:10px 24px;background:#333;color:#fff;border:1px solid #555;border-radius:4px;cursor:pointer;font-family:inherit;font-size:14px';
-    bWrap.appendChild(b1);bWrap.appendChild(b2);fq.appendChild(bWrap);
+function answer(q, idx) {
+  S.answers.push(idx);
 
-    b1.onclick=function(){
-      fq.style.background='#000';fq.style.color='#fff';
-      var qt=fq.querySelector('#fqText');
-      qt.textContent='';qt.style.textAlign='center';qt.style.fontSize='18px';qt.style.lineHeight='2.2';
-      bWrap.style.display='none';
-      // 键盘打字出句（污染线＝歇斯底里；环保线＝温柔挽留）
-      setTimeout(function(){
-        var seq;
-        if(mode==='red'){
-          seq=[
-            function(cb){var d=document.createElement('div');d.className='tt';d.style.color='#ff7a6a';qt.appendChild(d);typew(d,'你以为关掉，',90,cb)},
-            function(cb){var d=document.createElement('div');d.className='tt';d.style.color='#ff7a6a';qt.appendChild(d);typew(d,'我们之间就断了吗？',90,cb)},
-            function(cb){var d=document.createElement('div');d.className='tt';d.style.color='#ff3b30';d.style.fontSize='25px';d.style.letterSpacing='10px';d.style.marginTop='16px';d.style.textShadow='0 0 12px rgba(255,60,40,.5)';qt.appendChild(d);typew(d,'你、休、想',160,cb)}
-          ];
-        }else{
-          seq=[
-            function(cb){var d=document.createElement('div');d.className='tt';d.style.color='#cfeecd';qt.appendChild(d);typew(d,'你的手，落下去的那一刻，',95,cb)},
-            function(cb){var d=document.createElement('div');d.className='tt';d.style.color='#cfeecd';qt.appendChild(d);typew(d,'它就一直望着你。',95,cb)},
-            function(cb){var d=document.createElement('div');d.className='tt';d.style.color='#cfeecd';d.style.fontSize='22px';d.style.letterSpacing='6px';d.style.marginTop='16px';d.style.textShadow='0 0 14px rgba(120,220,150,.5)';qt.appendChild(d);typew(d,'请不要离开我。',150,cb)}
-          ];
-        }
-        var k=0;
-        (function go(){if(k<seq.length){seq[k](function(){k++;setTimeout(go,600)})}})();
-      },3000);
-      setTimeout(function(){fq.classList.remove('show');fq.innerHTML='<div id="fqText"></div>';next()},9800);
-    };
-    b2.onclick=function(){fq.classList.remove('show');fq.innerHTML='<div id="fqText"></div>';next()};
-  },500);
-}
+  if (idx === 3) {
+    playNoise(0.3, 0.04);
+  } else {
+    playTone(600, 0.1, 'sine', 0.04);
+  }
 
-/* ============ 假结束 ============ */
-function renderFakeEnd(){
-  qEl.innerHTML='';optsEl.innerHTML='';
-  fe.classList.add('show');
-  document.getElementById('feMain').textContent='问卷完成度：100%';
-  document.getElementById('feSub').textContent='感谢您的参与。';
-  setTimeout(function(){
-    document.getElementById('feMain').textContent='……';
-    document.getElementById('feSub').textContent='';
-  },2500);
-  setTimeout(function(){
-    document.getElementById('feMain').innerHTML='<span style="font-size:16px">等等。</span>';
-    document.getElementById('feSub').innerHTML='我还有问题没问完。';
-  },4000);
-  setTimeout(function(){fe.classList.remove('show');next()},6500);
-}
-
-/* ============ 结尾2 ============ */
-function renderEnding2(){qEl.innerHTML='<span style="opacity:.35;font-size:13px">第 21 题</span><br>'+Q[21-1].q;qEl.classList.add('in');var b=document.createElement('button');b.className='opt';b.textContent='查看结果 >>>';b.onclick=function(){showEnding()};optsEl.appendChild(b)}
-
-/* ============ 选答 ============ */
-function answer(i,o,it){
-  if(locked)return;locked=true;
-  var btns=optsEl.querySelectorAll('.opt');
-  btns.forEach(function(b,j){if(j!==i)b.classList.add('dim');b.disabled=true});
-  // 空选项：闪苔藓照片→跳回
-  if(o.blank){
-    var fake=document.createElement('div');
-    fake.style.cssText='position:fixed;inset:0;z-index:50;background:#1a2e10;display:flex;align-items:center;justify-content:center';
-    // 用 CSS 渐变模拟苔藓/菌丝纹理
-    var inner=document.createElement('div');
-    inner.style.cssText='width:100vw;height:100vh;background:radial-gradient(ellipse at 30% 40%,#2a4a1a 0%,#0e2a13 40%,#050f04 100%);position:relative;overflow:hidden';
-    for(var k=0;k<30;k++){
-      var dot=document.createElement('div');
-      dot.style.cssText='position:absolute;width:'+(4+Math.random()*8)+'px;height:'+(4+Math.random()*8)+'px;border-radius:50%;background:rgba(100,200,80,'+(.15+Math.random()*.3)+');top:'+Math.random()*100+'%;left:'+Math.random()*100+'%';
-      inner.appendChild(dot);
-    }
-    var txt=document.createElement('div');txt.style.cssText='position:absolute;bottom:20%;left:50%;transform:translateX(-50%);color:rgba(180,230,160,.6);font-size:13px;letter-spacing:3px;white-space:nowrap';txt.textContent='你看到了什么？';
-    inner.appendChild(txt);fake.appendChild(inner);
-    document.body.appendChild(fake);
-    setTimeout(function(){fake.remove();locked=false;
-      // 恢复其余选项可用
-      optsEl.querySelectorAll('.opt').forEach(function(b){b.disabled=false;b.classList.remove('dim')});
-    },800);
+  if (q === 6 && idx === 3) {
+    showBlackout([
+      { text: '嗯……', color: '#7f9f9c', delay: 0 },
+      { text: '我知道了。', color: '#7f9f9c', delay: 1500 },
+    ], () => nextQuestion());
     return;
   }
-  // 弹窗求饶（陷阱题选污染时）
-  if(it.trap&&o.poll){
-    pop.classList.add('show');
-    document.getElementById('pTitle').innerHTML='此选项可能不准确，是否重新考虑？';
-    // "好" = 坚持污染；"我错了" = 反悔改环保
-    document.getElementById('pOk').onclick=function(){
-      pop.classList.remove('show');
-      poll+=o.poll;
-      updProg(it);
-      fl(idx,i,o,false);
-    };
-    document.getElementById('pAlt').onclick=function(){
-      pop.classList.remove('show');
-      // 反悔：不计污染，反而算作环保的倾听（分线前不回话，直接推进）
-      eco+=1;
-      updProg(it);
-      setTimeout(next,800);
-    };
+  if (q === 7 && idx === 3) {
+    showBlackout([
+      { text: '不只是你一個人。', color: '#a8514f', delay: 0 },
+      { text: '……從來都不是。', color: '#a8514f', delay: 2000 },
+    ], () => nextQuestion());
     return;
   }
-  // 正常累积
-  if(o.eco)eco+=o.eco;
-  if(o.poll){poll+=o.poll;updProg(it);if(idx>=8&&poll>=THRESHOLD&&mode!=='red')apMode('red')}
-  else if(o.eco)updProg(it);
-  if(idx>=16){brFl(idx,i);return}
-  fl(idx,i);
-}
-
-/* ============ 反馈 ============ */
-/* 分线之前：选完不回话，直接进入下一题（环保与污染都保持安静推进） */
-function fl(qno,i){setTimeout(next,600)}
-
-/* ============ 分支 ============ */
-function renderBranch(it){
-  var r=(mode==='red');
-  if(it.kind==='branch'||it.kind==='branch2'){
-    // Q17: 选项选择题（渴望/污浊质问）；Q18: 叙述+继续
-    if(it.kind==='branch'){
-      renderOpts(r?it.pollOpts:it.ecoOpts);
-    }else{
-      typeT(fb,r
-        ?"（那根藤是焦黑的，渗着暗红的汁液。它一点点收紧，像要把你抱进它的枯骨里，又怕弄疼你。）「请你……再看我一眼。就一眼。」"
-        :"（那根藤是翠嫩的，顶端卷着一朵没舍得开的小花。它隔着屏幕，把花往你手边推了推，又害羞地收回一丝枝蔓。）「你……收到了吗？」",
-        30,function(){setTimeout(function(){var b=document.createElement('button');b.className='opt';b.textContent=r?'（我看着你。）':'（我收到了。很好看。）';b.onclick=next;optsEl.appendChild(b)},350)});
-    }
+  if (q === 8 && idx === 3) {
+    showBlackout([
+      { text: '你覺得你還有選擇嗎？', color: '#a8514f', delay: 0 },
+      { text: '別怕。', color: '#7f9f9c', delay: 2000 },
+      { text: '有我們在。', color: '#7a6a83', delay: 3500 },
+    ], () => nextQuestion());
     return;
   }
-  if(it.kind==='branch3'){
-    // Q19: 环保=融合邀请；污染=只准选我（唯一的、跳动的暗红选项）
-    if(r){
-      typeT(fb,"（没有第二个选项了。它的根系，已经把你脚下的每一寸土壤，都攥在了手心。）",30,function(){
-        setTimeout(function(){
-          var b=document.createElement('button');b.className='opt onlyme';b.textContent='你只能选我。';
-          b.onclick=next;optsEl.appendChild(b);
-        },350);
-      });
-    }else{
-      typeT(fb,"（最后一步了。它把最嫩的、还带着清晨露水的芽，怯生生地，递向你的方向。）「可以……让我，感觉一下你的温度吗？」",30,function(){
-        setTimeout(function(){var b=document.createElement('button');b.className='opt';b.textContent='我答应你。';b.onclick=next;optsEl.appendChild(b)},350);
-      });
-    }
-    return;
-  }
-  if(it.kind==='branch4'){
-    typeT(fb,r?it.pq:it.eq,30,function(){
-      setTimeout(function(){
-        var opts=r?it.pollOpts:it.ecoOpts;
-        (opts||[]).forEach(function(o,i){
-          var b=document.createElement('button');b.className='opt';b.textContent=o.t;
-          b.onclick=function(){
-            if(r)say("你敢。\n▓▓▓▓▓▓▓▓▓▓",'monster');
-            else if(i===1)say("你要拒绝我吗？可是我很想见你。",'gentle');
-            else say("你在看我对不对。",'gentle');
-            optsEl.querySelectorAll('.opt').forEach(function(x){x.disabled=true;x.classList.add('dim')});
-          };
-          optsEl.appendChild(b);
-        });
-      },350);
+  if (q === 11 && idx === 3) {
+    showBlackout([
+      { text: '我說的不是「我」', color: '#a8514f', delay: 0 },
+      { text: '是「我們」', color: '#7a6a83', delay: 2500 },
+      { text: '你終於聽懂了', color: '#a8514f', delay: 4500 },
+    ], () => {
+      document.getElementById('game-container').classList.add('shake-active');
+      playNoise(1, 0.08);
+      setTimeout(() => {
+        document.getElementById('game-container').classList.remove('shake-active');
+        showPage('ending');
+        playEnding();
+      }, 2000);
     });
     return;
   }
-}
-function renderOpts(opts){
-  (opts||[]).forEach(function(o,i){
-    var b=document.createElement('button');b.className='opt';b.innerHTML=o.t;
-    b.onclick=function(){answer(i,o,Q[idx])};optsEl.appendChild(b);
-  })
-}
-function brFl(qno,i){
-  if(qno===16){
-    if(mode==='red'){
-      say("你敢。\n▓▓▓▓▓▓▓▓▓▓",'monster');
-      say("▓▓▓▓▓▓ 你敢 ▓▓▓▓▓▓",'monster');
-      say("(它把整个森林的裂口，都对准了你。)\n你敢。",'monster');
-    }else{
-      if(i===0)say("你在看我对不对。",'gentle');
-      else if(i===1)say("我数了，你又选对了。",'gentle');
-      else say("快结束了……我就能碰到你了。",'gentle');
-    }
+  if (q === 12) {
+    showBlackout([
+      { text: '你選了什麼已經不重要了', color: '#7a6a83', delay: 0 },
+      { text: '因為測驗已經結束了', color: '#888', delay: 2000 },
+      { text: '但我們沒有結束', color: '#a8514f', delay: 3500 },
+      { text: '……', color: '#7f9f9c', delay: 5000 },
+    ], () => {
+      document.getElementById('game-container').classList.add('shake-active');
+      setTimeout(() => {
+        document.getElementById('game-container').classList.remove('shake-active');
+        showPage('ending');
+        playEnding();
+      }, 1500);
+    });
     return;
   }
-  next();
+
+  setTimeout(() => nextQuestion(), 400);
 }
 
-/* ============ 填空 ============ */
-fillB.onclick=fin;fillIn.addEventListener('keydown',function(e){if(e.key==='Enter')fin()});
-function fin(){
-  if(locked)return;locked=true;fillB.disabled=true;
-  var it=Q[idx];if(it.kind!=='fill')return;
-  var val=fillIn.value.trim();prevInput=val;
-  // 分线前的填空题：不回话，静默推进（Q10 / Q13 均在分线之前）
-  setTimeout(next,600);
+function showBlackout(lines, callback) {
+  const blackout = document.getElementById('blackout');
+  const container = document.getElementById('blackoutLines');
+  container.innerHTML = '';
+  blackout.classList.add('visible');
+  blackout.style.display = 'flex';
+
+  lines.forEach((l, i) => {
+    const div = document.createElement('div');
+    div.className = 'ghost-line';
+    div.style.animationDelay = l.delay + 'ms';
+    div.style.color = l.color;
+    div.textContent = l.text;
+    container.appendChild(div);
+  });
+
+  const maxDelay = Math.max(...lines.map(l => l.delay)) + 3000;
+  setTimeout(() => {
+    blackout.classList.remove('visible');
+    blackout.style.display = 'none';
+    if (callback) callback();
+  }, maxDelay);
 }
 
-/* ============ 上一题按钮变异 ============ */
-/* 上一题按钮：点不动。做不了无所谓的挣扎。 */
-bBtn.onclick=function(){
-  if(hist.length===0)return;
-  var cur=Q[idx];
-  if(cur.kind==='glitch'||cur.kind==='fakequit'||cur.kind==='fakeend'||cur.kind==='ending'){
-    bBtn.className='';
-    var blink=document.createElement('div');
-    blink.style.cssText='position:fixed;bottom:82px;left:50%;transform:translateX(-50%);z-index:46;color:rgba(255,255,255,.55);font-size:12px;letter-spacing:2px;background:rgba(0,0,0,.55);padding:6px 14px;border-radius:3px;pointer-events:none;transition:opacity .4s';
-    blink.textContent=(mode==='red')?'（回不去了。）':'（没有上一题了。只有向前。）';
-    document.body.appendChild(blink);
-    setTimeout(function(){blink.remove()},1800);
-    return;
-  }
-  var prev=hist.pop();
-  idx=prev.idx;eco=prev.eco;poll=prev.poll;
-  if(idx<14)apMode('n');
-  render();
-};
+function playEnding() {
+  setProgress(100);
+  setCounter('');
+  document.getElementById('metaWarning').textContent = '';
+  document.getElementById('scanline').classList.remove('visible');
 
-/* ============ 第四面墙 ============ */
-window.addEventListener('beforeunload',function(e){if(idx>=6){e.preventDefault();e.returnValue=''}});
-document.addEventListener('visibilitychange',function(){
-  var m=(mode==='red');
-  if(document.hidden&&idx>=8&&idx<20){
-    corner.textContent=m?"你走开的这几秒，我正把整片海也染灰。":"你不在的这几秒，我一直在等你回来。";
-    corner.classList.add('on');
-  }else if(!document.hidden){corner.classList.remove('on')}
-});
+  const title = document.getElementById('endingTitle');
+  const content = document.getElementById('endingContent');
 
-/* ============ 结语 ============ */
-function showEnding(){
-  locked=true;stopTitle();
-  try{localStorage.setItem('hrom_finished','1')}catch(e){}
-  ov.className=(mode==='red'?'er':'eg');
-  ov.classList.add('show');
-  ovT.textContent='';ovS.textContent='';
-  document.getElementById('ovClose').style.display='none';
-  var cvs=ov.querySelectorAll('.ending-cv');
-  for(var k=0;k<cvs.length;k++)cvs[k].remove();
-  var cv=document.createElement('div');
-  cv.className='ending-cv'+(mode==='red'?' ecv-red':' ecv-green');
-  ov.appendChild(cv);
-  if(mode==='red')redEnding(cv);else greenEnding(cv);
-}
-function showOvClose(){var b=document.getElementById('ovClose');b.style.display='inline-block'}
-/* 污染结局：黑屏→液体渗出打字→树根触手阴影→枯黑树皮裂纹"你属于我" */
-function redEnding(cv){
-  var seep=document.createElement('div');seep.className='seep';
-  cv.appendChild(seep);
-  setTimeout(function(){seep.classList.add('show')},2200);
-  // 逐句键盘打字（一节节渗出）
-  var seq=[
-    function(cb){var d=document.createElement('span');d.className='s-line tt';seep.appendChild(d);typew(d,'你……闻起来……好脏。',95,cb)},
-    function(cb){var d=document.createElement('span');d.className='s-line tt';seep.appendChild(d);typew(d,'但没关系。',95,cb)},
-    function(cb){var d=document.createElement('span');d.className='s-line tt';seep.appendChild(d);typew(d,'我变得更脏了。',95,cb)},
-    function(cb){var d=document.createElement('span');d.className='s-line tt';seep.appendChild(d);typew(d,'这样我们……就般配了。',95,cb)}
-  ];
-  setTimeout(function(){
-    var k=0;
-    (function go(){if(k<seq.length){seq[k](function(){k++;setTimeout(go,700)})}})();
-  },2600);
-  var tent=document.createElement('div');tent.className='tent';cv.appendChild(tent);
-  setTimeout(function(){tent.classList.add('show')},9400);
-  var bark=document.createElement('div');bark.className='bark';
-  var cr=document.createElement('div');cr.className='crack tt';cr.textContent='';
-  bark.appendChild(cr);cv.appendChild(bark);
-  setTimeout(function(){
-    bark.classList.add('show');
-    setTimeout(function(){typew(cr,'你属于我。',170)},1200);
-  },15000);
-  setTimeout(showOvClose,19600);
-}
-/* 环保结局：全绿森林→露滴打字→跳动的种子心脏+血管→小字说明 */
-function greenEnding(cv){
-  var dew=document.createElement('div');dew.className='dew';
-  cv.appendChild(dew);
-  setTimeout(function(){dew.classList.add('show')},1800);
-  // 逐句键盘打字
-  var seq=[
-    function(cb){var d=document.createElement('span');d.className='d-line tt';dew.appendChild(d);typew(d,'你……真好。',100,cb)},
-    function(cb){var d=document.createElement('span');d.className='d-line tt';dew.appendChild(d);typew(d,'你的答案……都是温的。',90,cb)},
-    function(cb){var d=document.createElement('span');d.className='d-line tt';dew.appendChild(d);typew(d,'像阳光……照在青苔上。',90,cb)},
-    function(cb){var d=document.createElement('span');d.className='d-line tt';dew.appendChild(d);typew(d,'我……不想让你走了。',90,cb)}
-  ];
-  setTimeout(function(){
-    var k=0;
-    (function go(){if(k<seq.length){seq[k](function(){k++;setTimeout(go,650)})}})();
-  },2200);
-  var seed=document.createElement('div');seed.className='seed';cv.appendChild(seed);
-  setTimeout(function(){seed.classList.add('show')},8600);
-  var vess=document.createElement('div');vess.className='vess';
-  for(var i=0;i<9;i++){var l=document.createElement('i');l.style.width=(40+Math.random()*70)+'px';l.style.transform='rotate('+(Math.random()*360)+'deg)';vess.appendChild(l);}
-  cv.appendChild(vess);
-  setTimeout(function(){vess.classList.add('show')},9600);
-  var cap=document.createElement('div');cap.className='seed-cap';
-  cap.innerHTML='（它把根系轻轻搭在了你的脉搏上。）<br>（从此，你每一次心跳，它都听得见。）';
-  cv.appendChild(cap);
-  setTimeout(function(){cap.classList.add('show')},11800);
-  setTimeout(showOvClose,15200);
+  title.textContent = '測驗結果';
+
+  const revealHTML = `
+    <div class="reveal" style="opacity:0; animation: fadeIn 2s ease 1s forwards;">
+      <p style="color:#888; font-size:0.85em; margin-bottom:30px;">正在分析您的回答……</p>
+    </div>
+    <div class="reveal" id="revealText" style="opacity:0;"></div>
+    <div id="ghostReveal" style="margin-top:40px; text-align:center;"></div>
+    <div id="finalMessage" style="margin-top:40px; opacity:0;"></div>
+  `;
+  content.innerHTML = revealHTML;
+
+  setTimeout(() => {
+    const rt = document.getElementById('revealText');
+    rt.style.animation = 'fadeIn 2s ease forwards';
+    rt.style.opacity = '1';
+    rt.innerHTML = `
+      <p style="color:#999; line-height:2.2;">你的回答顯示，你是一個<span class="ghost-a">容易被注意</span>的人。</p>
+    `;
+  }, 3000);
+
+  setTimeout(() => {
+    const rt = document.getElementById('revealText');
+    rt.innerHTML += `
+      <p style="color:#999; line-height:2.2; margin-top:16px;">你的每一個選擇，都有人<span class="ghost-b">記得</span>。</p>
+    `;
+    playBreathing();
+  }, 6000);
+
+  setTimeout(() => {
+    const gr = document.getElementById('ghostReveal');
+    gr.style.animation = 'fadeIn 3s ease forwards';
+    gr.innerHTML = `
+      <div style="border:1px solid #333; padding:30px; margin:20px 0; border-radius:4px;">
+        <p style="color:#7f9f9c; font-size:1.1em; line-height:2.4; margin-bottom:20px;">
+          「我一直都在看著你。」
+        </p>
+        <p style="color:#a8514f; font-size:1.1em; line-height:2.4;">
+          「我也是。」
+        </p>
+        <p style="color:#7a6a83; font-size:1.3em; line-height:2.4; margin-top:24px; font-weight:bold;">
+          「我們都是。」
+        </p>
+      </div>
+    `;
+    playTone(200, 2, 'sine', 0.05);
+  }, 9000);
+
+  setTimeout(() => {
+    const fm = document.getElementById('finalMessage');
+    fm.style.animation = 'fadeIn 3s ease forwards';
+    fm.style.opacity = '1';
+    fm.innerHTML = `
+      <div class="final-msg">
+        <p style="color:#888; line-height:2.4; margin-bottom:20px;">
+          你以為這份測驗只有一個聲音<br>
+          但從第一題開始<br>
+          <span class="ghost-a">他就一直在看著你</span><br>
+          而從第三題開始<br>
+          <span class="ghost-b">她也加入了</span>
+        </p>
+        <p style="color:#666; line-height:2.4; margin-bottom:20px;">
+          你以為顏色的變化只是設計<br>
+          但那是兩個不同的存在<br>
+          在搶奪你的注意力
+        </p>
+        <p style="color:#555; line-height:2.4; margin-bottom:30px; font-size:0.85em;">
+          這個測驗是假的<br>
+          但從你打開頁面的那一刻起<br>
+          <span style="color:#7a6a83">他們就已經在了</span>
+        </p>
+        <div class="big-reveal big-reveal-glow" id="comeFindUs">來<span class="corrupt">找</span><span class="corrupt2">我</span>們<span class="corrupt">吧</span></div>
+        <p style="color:#444; font-size:0.75em; line-height:2.2;">
+          你現在有在看門口嗎？
+        </p>
+        <button class="btn" style="margin-top:30px; border-color:#333;" onclick="restart()">重新測驗</button>
+      </div>
+    `;
+    playNoise(0.8, 0.02);
+    setTimeout(() => playKnock(), 2000);
+    corruptFindUs();
+  }, 14000);
 }
 
-/* ============ 控制 ============ */
-function next(){
-  hist.push({idx:idx,eco:eco,poll:poll});
-  idx++;
-  if(idx>=Q.length){showEnding();return}
-  if(idx>=7&&idx<=14){
-    if(Math.random()<0.5)setTimeout(glitchFlash,Math.floor(Math.random()*500)+300);
-    if(idx===9||idx===11)setTimeout(glitchFlash,700);
-  }
-  render();
-}
-/* 题目之间的乱码入侵：非常规字体/乱码，一闪而过，或伪装成"加载错误" */
-var GF_MSGS=['我……看到……你……了……','▓▓▒▒░░ 你喜欢……绿色吗？ ░░▒▒▓▓','▓▓▓ 正在读取你的呼吸 ▓▓▓','加载错误：无法解析第 ? 题','▓▓ ERROR ▓▓ 数据不对劲……','它……就在这里……','>> 你刚才……看它了吗？','▓搅▓ 我等你很久了 ▓动▓'];
-function glitchFlash(){
-  var f=document.createElement('div');
-  f.style.cssText='position:fixed;left:0;right:0;top:0;z-index:29;padding:7px 16px;background:rgba(8,3,3,.85);font-family:monospace;font-size:12px;color:'+(mode==='red'?'#ff7a6a':'#7ee6a0')+';letter-spacing:2px;pointer-events:none;opacity:0;transition:opacity .25s';
-  f.textContent=GF_MSGS[Math.floor(Math.random()*GF_MSGS.length)];
-  document.body.appendChild(f);
-  setTimeout(function(){f.style.opacity='1'},80);
-  setTimeout(function(){f.style.opacity='0'},3200);
-  setTimeout(function(){f.remove()},3800);
-}
-/* 上一份问卷的记忆：再次进入，开场不再是欢迎语 */
-(function(){
-  try{
-    if(localStorage.getItem('hrom_finished')==='1'){
-      var h=document.querySelector('#intro h1');
-      var ps=document.querySelectorAll('#intro p');
-      if(h)h.textContent='……';
-      if(ps[0])ps[0].innerHTML='这一次，你会好好爱我吗？';
-      if(ps[1])ps[1].innerHTML='它不是问卷。它一直都在，<b>等你回来</b>。';
-      if(ps[2])ps[2].innerHTML='（上一份问卷……不是你亲手填完的吗？）';
+function corruptFindUs() {
+  const el = document.getElementById('comeFindUs');
+  if (!el) return;
+  const base = '來找我們吧';
+  const corruptChars = ['誰','在','那','裡','見','面','門','後','來','吧','？','！','ㅇ','ヲ','█','̷'];
+  let passes = 0;
+  const timer = setInterval(() => {
+    if (!el || !el.isConnected) { clearInterval(timer); return; }
+    passes++;
+    const arr = base.split('');
+    const num = Math.floor(Math.random() * 2) + 1;
+    for (let i = 0; i < num; i++) {
+      const p = Math.floor(Math.random() * arr.length);
+      arr[p] = corruptChars[Math.floor(Math.random() * corruptChars.length)];
     }
-  }catch(e){}
-})();
-document.getElementById('startBtn').onclick=function(){
-  document.getElementById('intro').classList.add('hide');eA();
-  startTitle();startHB();
-  setTimeout(render,350)
-};
-document.getElementById('ovClose').onclick=function(){
-  ov.classList.remove('show');idx=0;eco=0;poll=0;mode='n';prevInput='';hist=[];
-  document.body.className='';blood.innerHTML='';stopTitle();stopHB();
-  document.title='环境保护意识调查问卷';
-  setTimeout(render,300)
-};
-document.getElementById('qgBtn').onclick=function(){qg.classList.remove('show')};
-document.addEventListener('keydown',function(e){
-  if(e.key==='Escape'&&mode==='green'&&idx>=6&&idx<20){
-    qgT.textContent='请不要离开我';
-    qg.classList.add('show');
+    let html = '';
+    for (let i = 0; i < arr.length; i++) {
+      const isCorrupt = arr[i] !== base[i];
+      const cls = isCorrupt ? (i % 2 === 0 ? 'corrupt' : 'corrupt2') : '';
+      html += `<span class="${cls}">${arr[i]}</span>`;
+    }
+    el.innerHTML = html;
+    document.getElementById('game-container').classList.add('shake-active');
+    setTimeout(() => document.getElementById('game-container').classList.remove('shake-active'), 80);
+    playGlitch();
+    if (passes > 8) {
+      clearInterval(timer);
+      el.className += ' big-reveal-glow';
+    }
+  }, 500);
+}
+
+function restart() {
+  S.currentQ = 0;
+  S.answers = [];
+  S.ghostASpeaks = 0;
+  S.ghostBSpeaks = 0;
+  S.ghostRevealed = false;
+  S.glitchCount = 0;
+  setProgress(0);
+  setCounter('');
+  setMeta('');
+  document.getElementById('scanline').classList.remove('visible');
+  showPage('intro');
+}
+
+// Idle events for later questions
+document.addEventListener('mousemove', (e) => {
+  if (!S.started) return;
+  if (S.currentQ >= 9) {
+    spawnCursorTrail(S.currentQ % 2 === 0 ? 'rgba(127,159,156,0.2)' : 'rgba(168,81,79,0.2)', e.clientX, e.clientY);
   }
 });
+
+// Keyboard listener - random glitch
+document.addEventListener('keydown', () => {
+  if (!S.started || S.currentQ < 6) return;
+  S.glitchCount++;
+  if (S.glitchCount % 7 === 0) {
+    document.getElementById('game-container').classList.add('glitch-active');
+    playGlitch();
+    setTimeout(() => document.getElementById('game-container').classList.remove('glitch-active'), 300);
+  }
+});
+
+// Random floating corrupted text
+setInterval(() => {
+  if (!S.started || S.currentQ < 5) return;
+  if (Math.random() < 0.15) {
+    const garbled = ['헓','ヲ','urd','𧨾','null','₀₁','ERROR','？？？','你在看','哪里','│','█','̷'];
+    const colors = ['#7f9f9c', '#a8514f', '#333', '#7a6a83'];
+    spawnFloatingText(
+      garbled[Math.floor(Math.random() * garbled.length)],
+      colors[Math.floor(Math.random() * colors.length)]
+    );
+  }
+}, 4000);
+
+// Hide progress bar initially
+document.getElementById('progressBar').style.display = 'none';
 </script>
+
 </body>
 </html>
