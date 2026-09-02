@@ -600,7 +600,7 @@ function ghostRow(text){
   const tb1=$('tb1');if(!tb1)return;
   const tr=document.createElement('tr');
   tr.className='phantom';
-  tr.innerHTML='<td class="x"></td><td></td><td></td><td>'+text+'</td>';
+  tr.innerHTML='<td class="x"></td><td>'+text+'</td><td></td><td></td>';
   tb1.insertBefore(tr,$('curRow'));
   playPop();
   setTimeout(()=>{tr.remove();},1200);
