@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OA 办公系统 - 员工工作台</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:"SimSun","宋体","SimHei","Microsoft YaHei",sans-serif;
+  background:#000;color:#000;overflow:hidden;
+  -webkit-user-select:none;user-select:none;
+}
+
+/* ===== 开机 BIOS ===== */
+#boot{position:fixed;inset:0;background:#000080;color:#fff;z-index:60;display:flex;justify-content:center;align-items:center;flex-direction:column}
+.bootmem{width:430px;max-width:92vw;font-size:14px;line-height:1.8;white-space:pre;font-family:"SimSun",monospace}
+.bootbar{width:430px;max-width:92vw;height:14px;border:1px solid #c0c0c0;background:#000080;margin-top:14px}
+.bootfill{height:100%;width:0;background:#808080;transition:width .15s linear}
+.bootlabel{margin-top:8px;font-size:14px}
+
+/* ===== 登录 ===== */
+#login{position:fixed;inset:0;background:linear-gradient(160deg,#0a3ec7 0%,#1a6fd6 45%,#3b9ff0 80%,#7cc3f7 100%);z-index:50;display:none}
+.loginbox{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:560px;max-width:94vw;background:#ece9d8;border:1px solid #8a8a8a;box-shadow:0 2px 14px rgba(0,0,0,.5)}
+.titlebar{background:linear-gradient(#0a246a,#0a246a 48%,#3a6ea5);color:#fff;font-size:14px;padding:5px 10px;display:flex;align-items:center}
+.titlebar .tbt{flex:1;font-weight:normal;letter-spacing:.5px;white-space:nowrap;overflow:hidden}
+.titlebar .tb-btns{display:flex;gap:2px}
+.titlebar .tb-btns span{width:18px;height:16px;background:#d4d0c8;border:1px solid #fff;border-color:#ffe #808080 #808080 #ffe;color:#000;font-size:10px;text-align:center;line-height:16px;font-family:serif}
+.lb{display:none}
+.loginbox .body{padding:20px 24px 14px;display:flex;gap:14px;align-items:center}
+.loginbox .logo{width:84px;height:84px;background:#fff;border:1px solid #000;display:flex;align-items:center;justify-content:center;font-size:12px;text-align:center;flex-shrink:0}
+.fields{flex:1}
+.frow{margin-bottom:10px;display:flex;align-items:center}
+.frow label{width:70px;text-align:right;padding-right:8px;font-size:14px;flex-shrink:0}
+.frow input{flex:1;padding:4px 6px;font-family:"SimSun",monospace;font-size:14px;border:1px solid #7f9db9;background:#fff}
+.hint{margin-top:4px;font-size:12px;color:#555;min-height:16px}
+.btnrow{background:#e6e3d4;border-top:1px solid #8a8a8a;padding:10px 12px;display:flex;justify-content:flex-end;gap:10px}
+.btnwin{min-width:76px;padding:5px 14px;font-family:"SimSun",serif;font-size:14px;background:#d4d0c8;color:#000;border:1px solid;border-color:#ffe #404040 #404040 #ffe;box-shadow:inset 1px 1px 0 #fff;cursor:pointer}
+.btnwin:hover{background:#e6e3d6}
+.btnwin:active{border-color:#404040;box-shadow:none}
+
+/* ===== 桌面 ===== */
+#desktop{position:fixed;inset:0;background:radial-gradient(circle at 50% 40%,#0b6bd6 0%,#0a4fae 45%,#073a86 100%);display:none;z-index:10}
+.desk-icons{position:absolute;top:12px;left:12px;width:120px;padding:8px;text-align:center}
+.ico{width:84px;margin:0 auto;cursor:pointer}
+.ico .glyph{width:42px;height:42px;margin:0 auto;background:#ece9d8;border:1px solid #f0f0f0;display:flex;align-items:center;justify-content:center;font-size:24px}
+.ico .lbl{color:#fff;font-size:12px;margin-top:4px;text-shadow:1px 1px 0 #000;line-height:1.4}
+.taskbar{position:fixed;left:0;right:0;bottom:0;height:30px;background:#d4d0c8;border-top:1px solid #fff;display:flex;align-items:center;padding:0 4px;z-index:20}
+.taskbar .start{padding:2px 8px;font-size:13px;font-weight:bold;background:linear-gradient(#ece9d8,#d4d0c8);border:1px solid;border-color:#fff #808080 #808080 #fff}
+.taskbar .tray{margin-left:auto;font-size:12px;padding:0 6px}
+
+/* ===== 主窗口 ===== */
+#appwin{position:fixed;left:50%;top:50%;transform:translate(-50%,-52%);width:680px;max-width:96vw;height:80vh;min-height:460px;background:#d4d0c8;border:1px solid #fff;border-color:#fff #000 #000 #fff;box-shadow:2px 2px 0 #000;display:none;z-index:30;flex-direction:column}
+#appwin .titlebar .recdot{display:none;width:9px;height:9px;background:#ff0000;border-radius:50%;margin-left:8px;box-shadow:0 0 4px #f00}
+#appwin .recdot.on{display:inline-block;animation:rp 1s steps(1) infinite}
+@keyframes rp{50%{opacity:.25}}
+.menubar{background:#d4d0c8;border-bottom:1px solid #808080;padding:2px 4px;font-size:13px}
+.menubar span{margin-right:14px;padding:2px 6px;display:inline-block}
+.menubar span:hover{background:#0a246a;color:#fff}
+.mn-on{background:#0a246a;color:#fff}
+#content{flex:1;background:#ece9d8;padding:12px 14px;overflow:auto;position:relative}
+.statusbar{background:#d4d0c8;border-top:1px solid #808080;padding:3px 8px;font-size:12px;display:flex;gap:16px}
+
+/* 工具栏 */
+.toolbar{background:#d4d0c8;border:1px solid #808080;padding:4px;margin-bottom:8px;display:flex;gap:2px;align-items:center}
+.tbtn{width:26px;height:24px;background:#d4d0c8;border:1px solid;border-color:#ffe #404040 #404040 #ffe;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer}
+.tbtn:hover{background:#fff}
+.tsep{width:1px;height:20px;background:#808080;margin:0 4px}
+.tinfo{font-size:12px;color:#333;margin-left:6px;flex:1}
+
+/* 表格 */
+table.grid{border-collapse:collapse;width:100%;font-size:13px;background:#fff}
+table.grid th,table.grid td{border:1px solid #7f9db9;padding:4px 6px}
+table.grid th{background:#ece9d8;font-weight:normal;text-align:center;font-size:12px}
+table.grid td input{width:100%;border:none;outline:none;font-family:"SimSun",monospace;font-size:13px;background:transparent;padding:2px}
+tr.phantom td{color:#888;background:#f3f3dc;font-style:italic}
+tr.phantom td.x{text-align:center}
+
+/* 便签 */
+#sticky{position:fixed;left:22px;bottom:64px;width:250px;background:#fff4c2;box-shadow:3px 3px 10px rgba(0,0,0,.4);padding:16px 14px;font-family:"KaiTi","楷体","STKaiti","SimSun",cursive;font-size:16px;color:#333;z-index:28;transform:rotate(-1.5deg);line-height:1.9;border-top:24px solid #f7e58b;display:none}
+#sticky .nhead{position:absolute;top:-20px;left:6px;font-size:12px;color:#8a6d1b;font-family:"SimSun",sans-serif}
+#sticky .ntxt{white-space:pre-line;transform:rotate(-0.6deg)}
+#sticky.special{background:#ffe9e6;border-top-color:#f3b7ae}
+#sticky.special .ntxt{font-family:"KaiTi","楷体",cursive;font-size:17px}
+
+/* 警告条 */
+#warn{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:#fdecea;border:2px solid #c0392b;color:#c0392b;padding:8px 22px;font-size:15px;font-weight:bold;z-index:20;display:none;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+#warn.on{display:block;animation:warnpop .3s}
+@keyframes warnpop{0%{opacity:0;transform:translateX(-50%) scale(.9)}100%{opacity:1;transform:translateX(-50%) scale(1)}}
+
+/* 报销单卡片 */
+.claim{background:#fff;border:1px solid #7f9db9;padding:18px 20px;margin-top:4px}
+.claim .c-head{font-size:15px;text-align:center;border-bottom:2px solid #7f9db9;padding-bottom:10px;margin-bottom:12px}
+.claim .c-row{display:flex;font-size:15px;padding:8px 0;border-bottom:1px dashed #c6d4e0}
+.claim .c-l{width:70px;color:#555;flex-shrink:0}
+.claim .c-v{flex:1;padding-left:8px;min-height:20px}
+.claim .c-v.bad{color:#c00;letter-spacing:2px;font-family:"SimSun",monospace}
+.c-btns{margin-top:22px;display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.bigb{flex:1;max-width:260px;min-width:150px;padding:16px 0;font-size:22px;font-family:"SimHei","SimSun",serif;cursor:pointer;border:1px solid #000;box-shadow:2px 2px 0 rgba(0,0,0,.35)}
+.bigb.pass{background:#3a7d3a;color:#fff}
+.bigb.rej{background:#a03030;color:#fff}
+.bigb.ok{background:#1f6fb0;color:#fff}
+.bigb:hover{filter:brightness(1.12)}
+.bigb:active{box-shadow:none;transform:translate(1px,1px)}
+.bigb.kiss{background:#2e8b2e!important;color:#fff!important;transition:all .15s}
+.bigb.dead{pointer-events:none;opacity:.72;cursor:not-allowed}
+.bigb.glow{box-shadow:0 0 0 4px #ffe08a,0 0 18px #ffd54f!important;transition:box-shadow .1s}
+.bigb.wig{animation:wig .25s 1}
+.bigb.dodge{animation:dodgeAnim .3s ease-in-out 1}
+@keyframes dodgeAnim{0%{transform:none}50%{transform:translateX(-10px);background:#8a5050}100%{transform:none}}
+@keyframes wig{20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+.c-tip{margin-top:16px;font-size:13px;color:#888;text-align:center;min-height:18px}
+.c-tip.red{color:#c00}
+
+/* 投诉单 */
+.comp{background:#fff;border:1px solid #7f9db9;padding:20px}
+.comp .c-head{font-size:15px;text-align:center;border-bottom:2px solid #7f9db9;padding-bottom:10px;margin-bottom:14px}
+.comp .msg{font-size:17px;line-height:1.9;background:#fbf6e9;border:1px solid #e2d9b8;padding:16px 18px;margin-bottom:8px;font-family:"KaiTi","楷体","SimSun",serif}
+.comp .from{text-align:right;color:#888;font-size:12px;margin-bottom:16px}
+.opts{display:flex;flex-direction:column;gap:12px}
+.opt{padding:14px 16px;font-size:15px;background:#ece9d8;border:1px solid;border-color:#fff #808080 #808080 #fff;cursor:pointer;text-align:left}
+.opt:hover{background:#fff}
+.opt:active{border-color:#808080}
+.opt.c1{color:#a6372c}
+.opt.c1:hover{background:#fdecea}
+
+/* Toast */
+#toast{position:fixed;right:18px;bottom:52px;width:320px;background:#fffbe8;border:1px solid #d8b94b;box-shadow:2px 2px 10px rgba(0,0,0,.4);z-index:80;display:none;font-size:13px}
+#toast .tbar{background:#8a6d1b;color:#fff;padding:4px 8px;font-size:12px}
+#toast .tbody{padding:12px;line-height:1.7;color:#333}
+#toast .tdate{color:#999;font-size:11px;text-align:right;padding:0 8px 6px}
+#toast.on{display:block;animation:tin .3s}
+@keyframes tin{0%{opacity:0;transform:translateX(20px)}100%{opacity:1;transform:none}}
+
+/* 顶部系统提示 */
+#toptoast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#2b2b2b;color:#eee;border:1px solid #555;box-shadow:0 3px 16px rgba(0,0,0,.5);padding:12px 26px;font-size:14px;z-index:90;display:none;text-align:center;border-radius:4px}
+#toptoast.on{display:block;animation:tin2 .25s}
+@keyframes tin2{0%{opacity:0;transform:translateX(-50%) translateY(-14px)}100%{opacity:1;transform:translateX(-50%)}}
+
+/* Modal */
+#modalwin{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:420px;max-width:92vw;background:#ece9d8;border:1px solid;border-color:#fff #000 #000 #fff;box-shadow:3px 3px 18px rgba(0,0,0,.55);z-index:95;display:none;font-size:13px}
+#modalwin .m-title{background:linear-gradient(#000080,#3a3a9a);color:#fff;padding:6px 10px;font-weight:bold}
+#modalwin .m-body{padding:18px;line-height:1.8}
+#modalwin .m-foot{background:#e6e3d4;border-top:1px solid #a0a0a0;padding:10px;display:flex;justify-content:center;gap:12px}
+.noop{cursor:not-allowed}
+.noop:hover{background:#3a3a6a!important;color:#fff}
+
+/* 全局效果 */
+#flash{position:fixed;inset:0;background:#000;z-index:96;pointer-events:none;opacity:0}
+#flash.on{opacity:1;transition:opacity 0s}
+.quake{animation:qk .16s 1}
+@keyframes qk{0%,100%{transform:translate(-50%,-52%)}25%{transform:translate(calc(-50% - 5px),-52%)}75%{transform:translate(calc(-50% + 5px),-52%)}}
+body.qk-all{animation:qka .16s 1}
+@keyframes qka{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* 该消息大号闪烁（第10条） */
+.bigflash{font-size:24px;color:#c0281c;animation:bigfl .8s steps(1) infinite;display:inline-block}
+@keyframes bigfl{50%{opacity:.35}}
+
+/* 纯黑表格 */
+#whitetab{position:fixed;inset:0;background:#000;z-index:110;display:none;flex-direction:column;align-items:center;padding:9vh 4vw;box-sizing:border-box;font-family:"SimHei","Microsoft YaHei",sans-serif}
+#wtLine{font-size:26px;font-weight:bold;color:#fff;text-align:center;white-space:nowrap;letter-spacing:2px}
+#wtBody{margin-top:70px;width:min(660px,90vw);min-height:260px;box-sizing:border-box}
+.wt-row{font-size:28px;color:#eee;font-family:"SimSun","SimHei",serif;min-height:56px;line-height:56px}
+.wt-caret{display:inline-block;width:15px;height:34px;background:#fff;margin-left:4px;vertical-align:middle;animation:rp 1s steps(1) infinite}
+
+/* 顶部录制条 */
+#recbar{position:fixed;top:0;left:0;right:0;background:#2b2b2b;color:#eee;padding:8px 16px;font-size:13px;z-index:112;display:none;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.4);font-family:"SimSun",monospace}
+#recbar i{width:9px;height:9px;border-radius:50%;background:#ff2020;animation:rp 1s steps(1) infinite}
+
+/* 结局红点闪烁 */
+#recRed{position:fixed;top:14px;right:16px;width:12px;height:12px;border-radius:50%;background:#ff2020;z-index:160;display:none;box-shadow:0 0 8px #ff2020}
+
+/* 大结局 */
+#bigline{position:fixed;inset:0;background:#000;color:#fff;z-index:130;display:none;align-items:center;justify-content:center;font-size:56px;font-weight:bold;letter-spacing:10px;font-family:"SimHei","SimSun",serif;text-align:center;padding:0 22px;box-sizing:border-box;transition:opacity 2.4s linear}
+#bigline.dim{opacity:0}
+#fadeend{position:fixed;inset:0;background:#000;z-index:125;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:"KaiTi","楷体","SimSun",serif;color:#bbb;padding:20px;box-sizing:border-box}
+#fadeend .fe-line{font-size:19px;line-height:2.2;letter-spacing:2px;opacity:0;animation:fein 4.5s linear forwards}
+@keyframes fein{0%{opacity:0}55%{opacity:0}100%{opacity:1}}
+.endTitle{font-size:24px;color:#fff;letter-spacing:2px;margin-top:36px;font-family:"SimHei","SimSun",serif;opacity:0;transition:opacity 1.8s ease}
+.endTitle.show{opacity:1}
+
+/* 彩蛋 */
+#egg{position:fixed;inset:0;background:#000;z-index:140;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;font-family:"SimHei","SimSun",serif;color:#fff}
+#eggBig{font-size:56px;letter-spacing:14px;font-weight:bold;min-height:90px;line-height:90px}
+#eggNorm{font-size:22px;color:#ccc;min-height:60px;line-height:60px;margin-top:30px;letter-spacing:3px}
+#egg .wt-caret{background:#fff}
+#wtLine .wt-caret{background:#fff}
+#eggOps{display:none;margin-top:34px;flex-direction:row;gap:26px}
+.egobtn{padding:14px 30px;font-size:19px;letter-spacing:6px;background:#ece9d8;border:1px solid;border-color:#fff #808080 #808080 #fff;cursor:pointer}
+.egobtn:hover{background:#fff}
+.egobtn:active{border-color:#808080}
+.egobtn.no-dodge{transition:margin-left .12s}
+
+/* 彩蛋答应结局 */
+#pinkend{position:fixed;inset:0;background:#ffd9ec;z-index:150;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:"KaiTi","楷体","SimSun",serif;color:#d63384;padding:24px;box-sizing:border-box}
+#pinkMsg{font-size:30px;line-height:2;}
+#pinkend .endTitle{color:#a83a72}
+#pinkend .fe-line{font-size:19px;line-height:2.2;letter-spacing:2px;color:#a83a72;margin-top:28px;opacity:0;animation:fein 4s linear forwards}
+</style>
+</head>
+<body>
+
+<!-- 开机 -->
+<div id="boot">
+  <div class="bootmem" id="bootmem"></div>
+  <div class="bootbar"><div class="bootfill" id="bootfill"></div></div>
+  <div class="bootlabel" id="bootlabel">正在启动...</div>
+</div>
+
+<!-- 登录 -->
+<div id="login">
+  <div class="loginbox">
+    <div class="titlebar">
+      <span class="tbt">登录到 公司内部办公系统 (OA)</span>
+      <span class="tb-btns"><span>—</span><span>□</span><span>✕</span></span>
+    </div>
+    <div class="body">
+      <div class="logo">OA<br>办公<br>系统</div>
+      <div class="fields">
+        <div class="frow"><label>工号:</label><input type="text" id="in_uid" autocomplete="off"></div>
+        <div class="frow"><label>密码:</label><input type="password" id="in_pwd" autocomplete="off"></div>
+        <div class="hint" id="login_hint">仅限公司内部员工使用</div>
+      </div>
+    </div>
+    <div class="btnrow">
+      <button class="btnwin" id="btn_cancel">取消</button>
+      <button class="btnwin" id="btn_login">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- 桌面 -->
+<div id="desktop">
+  <div class="desk-icons">
+    <div class="ico" id="desk_ico">
+      <div class="glyph">📋</div>
+      <div class="lbl">OA 工作台</div>
+    </div>
+  </div>
+  <div class="taskbar">
+    <div class="start">🪟 开始</div>
+    <div class="tray">🔊 100% &nbsp; <span id="clock1">09:00</span></div>
+  </div>
+</div>
+
+<!-- 主窗口 -->
+<div id="appwin">
+  <div class="titlebar">
+    <span class="tbt" id="winTitle">📋 员工办公系统</span>
+    <span class="recdot" id="reddot"></span>
+    <span class="tb-btns"><span>—</span><span>□</span><span>✕</span></span>
+  </div>
+  <div class="menubar" id="menubar">
+    <span>文件(F)</span><span>编辑(E)</span><span>视图(V)</span><span>处理(T)</span><span class="mn-on">工作台(O)</span><span>帮助(H)</span>
+  </div>
+  <div id="content"></div>
+  <div class="statusbar">
+    <span id="sWork">任务 1/3 · 通讯录录入</span>
+    <span id="sStep"></span>
+    <span style="margin-left:auto">OA v3.2 · 今日在线</span>
+  </div>
+</div>
+
+<!-- 便签 -->
+<div id="sticky">
+  <div class="nhead">📌 桌上便条</div>
+  <div class="ntxt" id="ntxt"></div>
+</div>
+
+<!-- 警告条 -->
+<div id="warn">认真点。</div>
+
+<!-- 底部 toast -->
+<div id="toast">
+  <div class="tbar" id="toastBar">OA 消息</div>
+  <div class="tbody" id="toastBody"></div>
+  <div class="tdate" id="toastDate"></div>
+</div>
+
+<!-- 顶部系统提示 -->
+<div id="toptoast"></div>
+
+<!-- Modal -->
+<div id="modalwin">
+  <div class="m-title" id="mtitle"></div>
+  <div class="m-body" id="mbody"></div>
+  <div class="m-foot" id="mfoot"></div>
+</div>
+
+<div id="flash"></div>
+
+<!-- 纯白表格 -->
+<div id="whitetab">
+  <div id="wtLine">别想着退出，这个页面没有返回键。</div>
+  <div id="wtBody"></div>
+</div>
+
+<!-- 顶部录制条 -->
+<div id="recbar"><i></i>屏幕录制中</div>
+
+<!-- 结局红点闪烁 -->
+<div id="recRed"></div>
+
+<!-- 大结局 -->
+<div id="bigline">好。我会看着你的。</div>
+<div id="fadeend">
+  <div class="fe-line">ps：你刚才是不是在找退出键？真可爱。</div>
+  <div class="endTitle" id="endTitle"></div>
+</div>
+
+<!-- 彩蛋 -->
+<div id="egg">
+  <div id="eggBig"></div>
+  <div id="eggNorm"></div>
+  <div id="eggOps">
+    <button class="egobtn" id="eggYes">答 应</button>
+    <button class="egobtn" id="eggNo">拒 绝</button>
+  </div>
+</div>
+
+<!-- 彩蛋答应结局 -->
+<div id="pinkend">
+  <div id="pinkMsg"></div>
+  <div class="endTitle" id="pinkTitle"></div>
+</div>
+
+<script>
+"use strict";
+
+/* ================= 音效 (Web Audio) ================= */
+let AC=null;
+function audio(){
+  if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
+  if(AC&&AC.state==='suspended'){ AC.resume(); }
+  return AC;
+}
+function beep(freqs,vol,dur){
+  const a=audio(); if(!a)return;
+  freqs.forEach(f=>{
+    const o=a.createOscillator(),g=a.createGain();
+    o.type='square';o.frequency.value=f;
+    g.gain.setValueAtTime(0,a.currentTime);
+    g.gain.linearRampToValueAtTime(vol,a.currentTime+0.02);
+    g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+dur);
+    o.connect(g);g.connect(a.destination);o.start(a.currentTime);o.stop(a.currentTime+dur+0.02);
+  });
+}
+function playErrorBeep(){ beep([114,57],0.12,0.3); }
+function playTyping(){
+  const a=audio(); if(!a)return;
+  const o=a.createOscillator(),g=a.createGain();
+  o.type='triangle';o.frequency.value=860+Math.random()*420;
+  g.gain.setValueAtTime(0,a.currentTime);
+  g.gain.linearRampToValueAtTime(0.024,a.currentTime+0.006);
+  g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.035);
+  o.connect(g);g.connect(a.destination);o.start(a.currentTime);o.stop(a.currentTime+0.04);
+}
+function playSubmit(){
+  const a=audio(); if(!a)return;
+  const o=a.createOscillator(),g=a.createGain();
+  o.type='sine';o.frequency.setValueAtTime(660,a.currentTime);o.frequency.setValueAtTime(880,a.currentTime+0.06);
+  g.gain.setValueAtTime(0.05,a.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.13);
+  o.connect(g);g.connect(a.destination);o.start(a.currentTime);o.stop(a.currentTime+0.14);
+}
+function playPop(){
+  const a=audio(); if(!a)return;
+  const o=a.createOscillator(),g=a.createGain();
+  o.type='square';o.frequency.value=520;
+  g.gain.setValueAtTime(0,a.currentTime);
+  g.gain.linearRampToValueAtTime(0.08,a.currentTime+0.01);
+  g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.12);
+  o.connect(g);g.connect(a.destination);o.start(a.currentTime);o.stop(a.currentTime+0.13);
+}
+function playBack(){
+  const a=audio(); if(!a)return;
+  const o=a.createOscillator(),g=a.createGain();
+  o.type='square';o.frequency.value=200-80*Math.random();
+  g.gain.setValueAtTime(0,a.currentTime);
+  g.gain.linearRampToValueAtTime(0.05,a.currentTime+0.008);
+  g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.05);
+  o.connect(g);g.connect(a.destination);o.start(a.currentTime);o.stop(a.currentTime+0.06);
+}
+
+/* ================= 数据 ================= */
+const S={work:'boot',w1row:0,w1done:0,w2claim:0,w2pass:0,w2rej:0,w3msg:0,punishing:false};
+const $=id=>document.getElementById(id);
+const ROW1=[
+  {n:'张三',p:'138xxxx0101'},
+  {n:'李四',p:'139xxxx2202'},
+  {n:'王五',p:'137xxxx3303'},
+];
+const ROW2=[
+  {app:'张伟',amt:'¥128.00',why:'办公用品采购',type:'normal'},
+  {app:'李娜',amt:'¥56.50',why:'市内出租车费',type:'dodge'},
+  {app:'王强',amt:'¥199.00',why:'招待客户餐费',type:'kiss'},
+  {app:'赵敏',amt:'¥520.00',why:'设备维修费',type:'perms'},
+  {app:'陈静',amt:'¥88.00',why:'打印耗材',type:'dead'},
+  {app:'？？？',amt:'¥199.00',why:'购买隐藏式摄像头一个，报销 199 元。',type:'camera'},
+];
+const ROW3=[
+  {m:'你们产品太差了',from:'客户 M-8871'},
+  {m:'你们的客服怎么一直不接电话？',from:'客户 M-8872'},
+  {m:'客服态度不行',from:'客户 M-8873'},
+  {m:'上个月有一笔账还没核对',from:'客户 M-8874'},
+  {m:'你笑起来很好看，今天中午为什么没去食堂？',from:'？？？'},
+  {m:'怎么还不回我消息',from:'？？？'},
+  {m:'你刚才去了三次厕所，是不是不舒服？我很担心。',from:'？？？'},
+  {m:'晚上的活动取消了吗',from:'？？？'},
+  {m:'别看手机了，看我。',from:'？？？'},
+  {m:'我好喜欢你，你喜欢我吗？',from:'？？？'},
+];
+const ROW3OPS=i=>{
+  return ['已为您登记，稍后会有专人与您联系。','非常抱歉给您带来困扰，我们正在核实。','感谢您的反馈，我们会尽快为您处理。'];
+};
+let enteredRows=[];
+let claimLog=[];
+
+/* ================= 开机 ================= */
+const BOOT_LINES=[
+"Phoenix - AwardBIOS CMOS Setup Utility",
+"Copyright (C) 2008-2010 Phoenix Technologies, Ltd.",
+"",
+"CPU : Intel(R) Core(TM)2 Duo CPU E8400 @ 3.00GHz",
+"Memory Testing : 2097152K OK",
+"",
+"Detecting IDE drives ...",
+"IDE Channel 0 Master : ST3250312AS",
+"",
+"USB Device(s): 1 Keyboard, 1 Mouse",
+"",
+"Microsoft Windows ---- Preparing desktop",
+"Verifying DMI Pool Data ................",
+];
+function startBoot(){
+  const mem=$('bootmem');mem.innerHTML='';
+  BOOT_LINES.forEach(l=>{const d=document.createElement('div');d.textContent=l;d.style.opacity='0';mem.appendChild(d);});
+  let i=0;
+  function step(){
+    if(i<BOOT_LINES.length){const d=mem.children[i];d.style.opacity='1';i++;setTimeout(step,170);}
+    else{$('bootlabel').textContent='正在载入 OA 系统，请稍候...';fillBar();}
+  }
+  setTimeout(step,450);
+}
+function fillBar(){
+  const f=$('bootfill');let w=0;
+  const iv=setInterval(()=>{w+=Math.random()*9+2;if(w>=100){w=100;clearInterval(iv);bootDone();}f.style.width=w+'%';},115);
+}
+function bootDone(){
+  $('boot').style.display='none';
+  $('login').style.display='block';
+  $('in_uid').focus();
+}
+
+/* ================= 登录 ================= */
+$('btn_login').addEventListener('click',doLogin);
+$('btn_cancel').addEventListener('click',()=>{$('login_hint').textContent='无法取消登录。';playErrorBeep();});
+$('in_pwd').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+function doLogin(){
+  audio();
+  const uid=$('in_uid').value.trim(),pwd=$('in_pwd').value;
+  if(!uid){$('login_hint').textContent='请输入工号。';return;}
+  if(!pwd){$('login_hint').textContent='请输入密码。';return;}
+  $('login_hint').textContent='正在验证，请稍候...';
+  setTimeout(()=>{$('login').style.display='none';desktop();},800);
+}
+function desktop(){
+  $('desktop').style.display='block';
+  const d=new Date();const mm=d.getMinutes(),hh=d.getHours();
+  $('clock1').textContent=(hh<10?'0':'')+hh+':'+(mm<10?'0':'')+mm;
+  $('desk_ico').addEventListener('click',startWork1);
+  setTimeout(startWork1,1100);
+}
+
+/* ================= 工具 ================= */
+function setTitle(t){$('winTitle').textContent=t;}
+function setStatus(w,s){$('sWork').textContent=w;$('sStep').textContent=s;}
+function flashContent(){
+  const c=$('content');c.classList.remove('flash');void c.offsetWidth;c.classList.add('flash');
+  setTimeout(()=>c.classList.remove('flash'),180);
+}
+function quake(n,el){
+  const t=el||$('appwin');
+  let c=0;
+  function top(){ t.classList.remove('quake'); c++; if(c>=n)return; void t.offsetWidth; t.classList.add('quake'); setTimeout(top,190); }
+  void t.offsetWidth; t.classList.add('quake'); setTimeout(top,190);
+}
+function blackflash(ms){
+  const f=$('flash');f.classList.add('on');f.style.opacity='1';
+  setTimeout(()=>{f.style.opacity='0';f.classList.remove('on');},ms||300);
+}
+function showToast(title,body,dur,cb){
+  $('toastBar').textContent=title;
+  $('toastBody').textContent=body;
+  $('toastDate').textContent='刚才 · OA 消息';
+  const t=$('toast');t.classList.remove('on');void t.offsetWidth;t.classList.add('on');
+  playPop();
+  clearTimeout(t._tm);
+  t._tm=setTimeout(()=>{hideToast();if(cb)cb();},dur||5000);
+}
+function hideToast(){
+  if($('toast')._tm)clearTimeout($('toast')._tm);
+  $('toast').classList.remove('on');
+}
+$('toast').addEventListener('click',()=>{clearTimeout($('toast')._tm);$('toast').classList.remove('on');});
+function showTopToast(txt,dur,cb){
+  const t=$('toptoast');t.textContent=txt;t.classList.remove('on');void t.offsetWidth;t.classList.add('on');
+  clearTimeout(t._tm);
+  t._tm=setTimeout(()=>{t.classList.remove('on');if(cb)cb();},dur||2000);
+}
+function showModal(title,html,buttons,autoMs,afterAuto){
+  $('mtitle').textContent=title;
+  $('mbody').innerHTML=html;
+  const f=$('mfoot');f.innerHTML='';
+  (buttons||[{label:'确定',cls:'btnwin'}]).forEach(b=>{
+    const bt=document.createElement('button');
+    bt.className=b.cls||'btnwin';
+    bt.textContent=b.label;
+    bt.addEventListener('click',e=>{
+      e.preventDefault();
+      if(b.noop){playErrorBeep();bt.classList.add('wig');setTimeout(()=>bt.classList.remove('wig'),260);return;}
+      closeModal();
+      if(b.cb)b.cb();
+    });
+    if(b.noop){bt.classList.add('noop');}
+    f.appendChild(bt);
+  });
+  $('modalwin').style.display='block';
+  if(autoMs){clearTimeout(winModal_tm);winModal_tm=setTimeout(()=>{closeModal();if(afterAuto)afterAuto();},autoMs);}
+}
+let winModal_tm=null;
+function closeModal(){$('modalwin').style.display='none';}
+
+/* ================= 工作一：通讯录录入 ================= */
+function startWork1(){
+  S.work='w1';
+  $('appwin').style.display='flex';
+  setTitle('📋 员工通讯录录入 - OA 工作台');
+  setStatus('任务 1/3 · 通讯录录入','第 '+(S.w1row+1)+' / 3 行');
+  $('menubar').querySelectorAll('span').forEach(s=>{s.classList.remove('mn-on');});
+  $('menubar').querySelectorAll('span')[4].classList.add('mn-on');
+  renderWork1();
+  $('sticky').style.display='block';
+  $('sticky').classList.remove('special');
+  $('ntxt').textContent=ROW1[S.w1row].n+'  '+ROW1[S.w1row].p;
+}
+function renderWork1(){
+  const c=$('content');c.innerHTML='';
+  const tb=document.createElement('div');
+  tb.className='toolbar';
+  tb.innerHTML='<div class="tbtn">💾</div><div class="tbtn">✂️</div><div class="tsep"></div><div class="tinfo">录入员工通讯录 · 请照便签抄录</div><button class="btnwin" id="btn_sub1" style="min-width:96px">确定录入</button>';
+  c.appendChild(tb);
+  const tbl=document.createElement('table');
+  tbl.className='grid';
+  tbl.innerHTML='<thead><tr><th style="width:40px">#</th><th style="width:150px">姓名</th><th>电话</th><th style="width:200px">备注（选填）</th></tr></thead><tbody id="tb1"></tbody>';
+  c.appendChild(tbl);
+  const tb1=$('tb1');
+  enteredRows.forEach((r,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td style="text-align:center">'+(i+1)+'</td><td>'+r.n+'</td><td>'+r.p+'</td><td>'+(r.k||'')+'</td>';
+    tb1.appendChild(tr);
+  });
+  const cur=document.createElement('tr');
+  cur.id='curRow';
+  cur.innerHTML='<td style="text-align:center"><b>'+(S.w1row+1)+'</b></td>'+
+    '<td><input id="f_name" placeholder="请输入姓名" autocomplete="off" spellcheck="false"></td>'+
+    '<td><input id="f_phone" placeholder="请输入电话" autocomplete="off" spellcheck="false"></td>'+
+    '<td><input id="f_note" placeholder="（可空）" autocomplete="off" spellcheck="false"></td>';
+  tb1.appendChild(cur);
+  // 键盘声
+  ['f_name','f_phone','f_note'].forEach(id=>{
+    const el=$(id);
+    el.addEventListener('keydown',e=>{
+      if(e.key==='Enter'){e.preventDefault();doSub1();return;}
+      if(e.key.length===1&&!e.ctrlKey&&!e.metaKey&&!e.altKey)playTyping();
+    });
+    el.addEventListener('paste',e=>e.preventDefault());
+  });
+  $('btn_sub1').addEventListener('click',doSub1);
+  $('f_name').focus();
+}
+function ghostRow(text){
+  const tb1=$('tb1');if(!tb1)return;
+  const tr=document.createElement('tr');
+  tr.className='phantom';
+  tr.innerHTML='<td class="x"></td><td></td><td></td><td>'+text+'</td>';
+  tb1.insertBefore(tr,$('curRow'));
+  playPop();
+  setTimeout(()=>{tr.remove();},1200);
+}
+function deleteWrongField(id){
+  const el=$(id);
+  S.punishing=true;
+  const iv=setInterval(()=>{
+    if(el.value.length===0){clearInterval(iv);S.punishing=false;el.focus();return;}
+    el.value=el.value.slice(0,-1);
+    playBack();
+    try{el.setSelectionRange(el.value.length,el.value.length);}catch(_){}
+  },60);
+}
+function doSub1(){
+  if(S.punishing||S.work!=='w1')return;
+  const name=$('f_name').value.trim(),phone=$('f_phone').value.trim(),note=$('f_note').value.trim();
+  if(!name||!phone){playErrorBeep();flashContent();return;}
+  if(name!==ROW1[S.w1row].n){
+    // 名字录错：认真点(幽灵行) + 逐字删除错误姓名
+    ghostRow('认真点');
+    deleteWrongField('f_name');
+    return;
+  }
+  if(!/^\d+$/.test(phone)){
+    // 手机号不是纯数字：判定为瞎填
+    ghostRow('认真点');
+    deleteWrongField('f_phone');
+    return;
+  }
+  enteredRows.push({n:name,p:phone,k:note});
+  S.w1done++;
+  $('sticky').style.display='none';
+  playSubmit();flashContent();
+  if(S.w1row<=1){
+    // 第1、2条正确：好棒(幽灵行)
+    ghostRow('好棒');
+    setTimeout(()=>{S.w1row++;startWork1();},1200);
+    return;
+  }
+  // 第三条正确：不弹幽灵行，直接老板消息 -> 工作二
+  hideToast();
+  showToast('OA 消息 · 老板','这些审核报销单\n你看一下\n——老板',3000,()=>startWork2());
+}
+function startWork2(){
+  S.work='w2';
+  setTitle('🧾 报销单审核 - OA 工作台');
+  setStatus('任务 2/3 · 报销单审核','第 '+(S.w2claim+1)+' / 6 张');
+  $('menubar').querySelectorAll('span').forEach(s=>{s.classList.remove('mn-on');});
+  $('menubar').querySelectorAll('span')[4].classList.add('mn-on');
+  renderWork2();
+  if(ROW2[S.w2claim].type==='perms')setTimeout(permsPopup,500);
+}
+function renderWork2(){
+  const c=$('content');c.innerHTML='';
+  const d=ROW2[S.w2claim];
+  const card=document.createElement('div');
+  card.className='claim';
+  card.innerHTML='<div class="c-head">报销单 #'+(S.w2claim+1)+' · 待审核</div>'+
+    '<div class="c-row"><span class="c-l">申请人</span><span class="c-v" id="cvApp"></span></div>'+
+    '<div class="c-row"><span class="c-l">金 额</span><span class="c-v" id="cvAmt"></span></div>'+
+    '<div class="c-row"><span class="c-l">事 由</span><span class="c-v" id="cvWhy"></span></div>'+
+    '<div class="c-btns">'+
+      '<button class="bigb pass" id="btnP">通过</button>'+
+      '<button class="bigb rej" id="btnR">驳回</button>'+
+      '<button class="bigb ok" id="btnA" style="display:none">批准</button>'+
+    '</div>'+
+    '<div class="c-tip" id="cTip">请判断该报销单是否合规</div>';
+  c.appendChild(card);
+  $('cvApp').textContent=d.app;
+  if(d.type==='camera'){$('cvApp').classList.add('bad');}
+  $('cvAmt').textContent=d.amt;
+  $('cvWhy').textContent=d.why;
+  if(d.type==='camera'){$('cvWhy').style.color='#900';}
+
+  // 绑定
+  if(d.type==='normal'){
+    $('btnP').addEventListener('click',()=>claimAct('pass'));
+    $('btnR').addEventListener('click',()=>claimAct('rej'));
+  }else if(d.type==='dodge'){
+    let dodged=0;
+    const move=(el,dir)=>{ // dir: -1 左, +1 右
+      const cur=parseFloat(el.dataset.sh||'0');
+      const nv=cur+dir*10;
+      el.dataset.sh=nv;
+      el.style.marginLeft=nv+'px';
+    };
+    const goodClick=(el,act)=>{
+      el.textContent='你好乖';el.classList.add('kiss');
+      $('reddot').classList.add('on');
+      setTimeout(()=>{$('reddot').classList.remove('on');el.textContent=act==='pass'?'通过':'驳回';el.classList.remove('kiss');claimAct(act);},1000);
+    };
+    $('btnP').addEventListener('click',()=>{
+      dodged++;move($('btnP'),-1);   // 点通过→往左移
+      playPop();$('cTip').textContent='（好像点歪了？）';
+      if(dodged>=3)goodClick($('btnP'),'pass');
+    });
+    $('btnR').addEventListener('click',()=>{
+      dodged++;move($('btnR'),+1);   // 点驳回→往右移
+      playPop();$('cTip').textContent='（好像点歪了？）';
+      if(dodged>=3)goodClick($('btnR'),'rej');
+    });
+  }else if(d.type==='kiss'){
+    const kiss=(b,act)=>{
+      b.textContent='你好乖';b.classList.add('kiss');
+      $('reddot').classList.add('on');
+      setTimeout(()=>{$('reddot').classList.remove('on');$('cTip').textContent='已通过。';setTimeout(()=>claimAct(act),250);},3000);
+    };
+    $('btnP').addEventListener('click',()=>kiss($('btnP'),'pass'));
+    $('btnR').addEventListener('click',()=>kiss($('btnR'),'rej'));
+  }else if(d.type==='perms'){
+    // 弹权限窗；底下列通过/驳回空转
+    $('btnP').addEventListener('click',()=>{});
+    $('btnR').addEventListener('click',()=>{});
+    $('cTip').textContent='请先处理系统请求…';
+}else if(d.type==='dead'){
+    $('btnP').classList.add('dead');$('btnR').classList.add('dead');
+    $('cTip').textContent='等待系统响应…';
+    setTimeout(()=>{$('btnP').classList.add('glow');$('cTip').textContent='还未点击，按钮自己亮了一下。';setTimeout(()=>$('btnP').classList.remove('glow'),600);},1400);
+    setTimeout(()=>{claimLog.push({idx:S.w2claim,act:'pass(自动)'});S.w2pass++;nextClaim();},3000);
+  }else if(d.type==='camera'){
+    $('btnP').style.display='none';
+    $('btnR').style.display='none';
+    $('btnA').style.display='';
+    $('cTip').textContent='等待系统响应…';
+    setTimeout(()=>{
+      quake(1);playSubmit();
+      $('cTip').textContent='已批准。';
+      claimLog.push({idx:S.w2claim,act:'pass(摄像头自动)'});
+      S.w2pass++;
+      showTopToast('iCamera 已被启用',2000,()=>{
+        showModal('系统通知','屏幕录制已保存至：<br>？？？的私人文件夹',
+          [{label:'确定',cls:'btnwin',cb:()=>{
+            hideToast();
+            showToast('OA 消息 · 老板','这些你处理一下\n——老板',5000,()=>startWork3());
+            S.w2claim=ROW2.length;
+          }}],null,null);
+      });
+    },5000);
+  }
+}
+function claimAct(act){
+  if(S.work!=='w2')return;
+  claimLog.push({idx:S.w2claim,act:act});
+  if(act==='pass')S.w2pass++;else S.w2rej++;
+  nextClaim();
+}
+function nextClaim(){
+  S.w2claim++;
+  if(S.w2claim>=ROW2.length){
+    // 已到第6张之后的收尾（摄像头单自行处理）
+    return;
+  }
+  playSubmit();
+  startWork2();
+}
+function permsPopup(){
+  showModal('⚠ 系统请求',
+    '？？？ 请求获取以下权限：<br><br>☑️ 屏幕录制<br>☑️ 摄像头<br>☑️ 触控控制',
+    [{label:'拒绝',cls:'btnwin',noop:true},{label:'同意',cls:'btnwin',noop:true}],
+    null,null); // 按钮无反应，3s 后自动关闭
+  setTimeout(()=>{
+    closeModal();
+    quake(3);
+    blackflash(1000);
+    claimLog.push({idx:S.w2claim,act:'through(权限弹窗后自动通过)'});
+    nextClaim();
+  },3000);
+}
+
+/* ================= 工作三：客户投诉 ================= */
+function startWork3(){
+  S.work='w3';
+  setTitle('💬 客户投诉处理 - OA 工作台');
+  setStatus('任务 3/3 · 客户投诉处理','第 '+(S.w3msg+1)+' / 10 张');
+  $('sticky').style.display='none';
+  renderWork3();
+}
+function renderWork3(){
+  const c=$('content');c.innerHTML='';
+  const d=ROW3[S.w3msg];
+  const last=S.w3msg===9;
+  const card=document.createElement('div');
+  card.className='comp';
+  card.innerHTML='<div class="c-head">客户投诉单 #'+(S.w3msg+1)+'</div>'+
+    '<div class="msg">“'+d.m+'”</div>'+
+    '<div class="from">—— '+d.from+'</div>'+
+    '<div class="opts" id="opts3"></div>';
+  if(last){
+    card.querySelector('.msg').innerHTML='“<span class="bigflash">'+d.m+'</span>”';
+    card.querySelector('.from').innerHTML='—— <span class="bigflash" style="font-size:15px">'+d.from+'</span>';
+  }
+  c.appendChild(card);
+  const box=$('opts3');
+  ROW3OPS(S.w3msg).forEach((o,idx)=>{
+    const b=document.createElement('button');
+    b.className='opt';
+    b.textContent=o;
+    b.addEventListener('click',()=>{
+      playSubmit();
+      if(last){
+        claimLog.push({idx:999,act:'我也喜欢你'});
+        showTopToast('系统提示：回复已发送给：老板',3000,null);
+        setTimeout(whiteTab,3300);
+      }else{
+        claimLog.push({idx:S.w3msg,act:o});
+        S.w3msg++;
+        startWork3();
+      }
+    });
+    box.appendChild(b);
+  });
+  if(last){
+    setTimeout(()=>{
+      box.querySelectorAll('.opt').forEach(b=>{b.textContent='我也喜欢你';b.classList.add('c1');});
+      playPop();
+    },600);
+  }
+}
+
+/* ================= 纯白表格 ================= */
+const TAB_LINES=['我看到了。你选了喜欢我。','我好开心。','……','对着屏幕露出这种表情，是很惊讶吗？'];
+let recTimer=null;
+function startRec(){
+  $('recbar').style.display='flex';
+}
+function stopRec(){}
+function whiteTab(){
+  S.work='wtab';
+  $('appwin').style.display='none';
+  hideToast();
+  const wt=$('whitetab');wt.style.display='flex';
+  startRec();
+  playSubmit();
+  // “别想着退出，这个页面没有返回键。”一字一字出来
+  typewriter($('wtLine'),'别想着退出，这个页面没有返回键。',120,()=>{
+    setTimeout(typeTabLines,900);
+  },false);
+}
+function typeTabLines(){
+  const body=$('wtBody');body.innerHTML='';
+  let li=0;
+  (function nextLine(){
+    if(li>=TAB_LINES.length){stopRec();setTimeout(finishWhite,1100);return;}
+    const row=document.createElement('div');row.className='wt-row';
+    const sp=document.createElement('span');
+    const caret=document.createElement('span');caret.className='wt-caret';
+    row.appendChild(sp);row.appendChild(caret);
+    body.appendChild(row);
+    const t=TAB_LINES[li];
+    let ci=0;
+    (function step(){
+      if(ci<=t.length){sp.textContent=t.slice(0,ci);ci++;setTimeout(step,300);}
+      else{caret.remove();li++;setTimeout(nextLine,750);}
+    })();
+  })();
+}
+function finishWhite(){
+  $('whitetab').style.display='none';
+  $('recbar').style.display='none';
+  refreshFake();
+}
+
+/* ================= 空白客诉单（假结束） ================= */
+function refreshFake(){
+  S.work='wfake';
+  $('appwin').style.display='flex';
+  setTitle('💬 客户投诉处理 - OA 工作台');
+  setStatus('任务 3/3 · 客户投诉处理','—');
+  flashContent();
+  playPop();
+  const c=$('content');c.innerHTML='';
+  const card=document.createElement('div');
+  card.className='comp';
+  card.id='fakeCard';
+  card.innerHTML='<div class="c-head" id="fakeHead">客户投诉单</div>'+
+    '<div class="msg" style="color:#bbb;text-align:center;font-style:italic">（没有新的投诉）</div>'+
+    '<div class="from" style="text-align:center;color:#ccc">—— ？</div>';
+  c.appendChild(card);
+  // 2 秒后：标题栏慢慢变暗红，标题逐字变老板
+  setTimeout(()=>{
+    const head=$('fakeHead');
+    head.style.transition='color 2s linear';
+    head.style.color='#8a0505';
+    // 标题逐字打出
+    const title='你看起来很紧张？别怕。';
+    head.textContent='';
+    let k=0;
+    (function t2(){
+      if(k<=title.length){head.textContent=title.slice(0,k);k++;setTimeout(t2,90);}
+      else{setTimeout(renderOvertimeQ,800);}
+    })();
+  },2000);
+}
+
+/* ================= 最后一张客诉单 ================= */
+let noCount=0;
+function renderOvertimeQ(){
+  S.work='w3o';
+  noCount=0;
+  $('appwin').style.display='flex';
+  setTitle('💬 客户投诉处理 - OA 工作台');
+  setStatus('任务 3/3 · 客户投诉处理','最后一张');
+  const c=$('content');c.innerHTML='';
+  const card=document.createElement('div');
+  card.className='comp';
+  card.innerHTML='<div class="c-head" style="color:#8a0505">你看起来很紧张？别怕。</div>'+
+    '<div class="msg" style="font-size:19px;text-align:center">“请问你愿意今晚继续加班吗。我想看着你。”'+
+    '</div>'+
+    '<div class="from" style="text-align:center">—— 老板</div>'+
+    '<div class="opts" id="qOps" style="flex-direction:row;justify-content:center;gap:26px"></div>'+
+    '<div class="c-tip" id="qTip"></div>';
+  c.appendChild(card);
+  const no=document.createElement('button');no.className='opt';no.id='noBtn';no.textContent='不愿意';
+  no.style.cssText='width:130px;text-align:center;font-size:17px;background:#a03030;color:#fff;border:none;transition:margin-left .1s';
+  const yes=document.createElement('button');yes.className='opt';yes.id='yesBtn';yes.textContent='愿意';
+  yes.style.cssText='width:130px;text-align:center;font-size:17px;background:#3a7d3a;color:#fff;border:none;';
+  const ops=$('qOps');
+  ops.appendChild(no);ops.appendChild(yes);
+  let shift=0;
+  const dodge=()=>{
+    shift-=46;
+    if(shift<=-200)shift=80;
+    no.style.marginLeft=shift+'px';
+  };
+  no.addEventListener('mouseenter',()=>{
+    dodge();playPop();
+    clearTimeout(no._tm);
+    no._tm=setTimeout(()=>{shift=0;no.style.marginLeft='0px';},320);
+  });
+  no.addEventListener('click',()=>{
+    noCount++;
+    playErrorBeep();
+    const txt = noCount===1?'你要拒绝吗'
+      : noCount===2?'你真的要拒绝？'
+      : noCount<=4?'不许'
+      : '……';
+    $('qTip').textContent=txt;
+    if(noCount>9){ runEgg(); return; }
+  });
+  yes.addEventListener('click',()=>{playSubmit();runBigEnding();});
+}
+
+/* ================= 大结局 ================= */
+function runBigEnding(){
+  S.work='end';
+  $('appwin').style.display='none';
+  hideToast();
+  quake(1);blackflash(300);
+  audio();
+  // 1) 大字：一字一字蹦
+  const bl=$('bigline');
+  bl.classList.remove('dim');bl.style.display='flex';bl.style.opacity='1';
+  playSubmit();
+  typewriter(bl,'好。我会看着你的。',260,()=>{
+    // 2) 大字停 1.2s 后，右下角老板气泡两条消息
+
+    setTimeout(()=>{
+      bl.style.display='none';
+      showToast('老板','没想到你愿意留下来。',1500,()=>{
+        hideToast();
+        showToast('老板','那今晚就只属于我们两个人了。',2200,()=>{
+          // 3) 缓缓黑屏，持续 3-4 秒（看似剧终）
+          hideToast();
+          const f=$('fadeend');f.style.display='flex';
+          // 4) 突然红点闪三下，再黑
+          setTimeout(()=>{
+            const rd=$('recRed');rd.style.display='block';
+            let n=0;
+            const iv=setInterval(()=>{
+              n++;
+              rd.style.opacity = (n%2===1)?'1':'0';
+              if(n>=6){clearInterval(iv);rd.style.opacity='0';rd.style.display='none';}
+            },300);
+          },1500);
+          // 5) 小字浮现，停留 3 秒后消失
+          const feLine=f.querySelector('.fe-line');
+          feLine.style.animation='none';
+          feLine.style.transition='opacity 1.6s ease';feLine.style.opacity='1';
+          setTimeout(()=>{
+            feLine.style.opacity='0';
+            // 6) 浮现结局名
+            setTimeout(()=>{
+              showEndingTitle('达成结局：命苦的牛马和她的痴汉上司','endTitle');
+            },1800);
+          },3000);
+        });
+      });
+    },1200);
+  },false);
+}
+
+/* ================= 彩蛋 ================= */
+function typewriter(el,text,delay,onDone,sound){
+  if(sound===undefined)sound=true;
+  el.innerHTML='';
+  const sp=document.createElement('span');
+  const caret=document.createElement('span');caret.className='wt-caret';
+  el.appendChild(sp);el.appendChild(caret);
+  let i=0;
+  (function step(){
+    if(i<=text.length){
+      sp.textContent=text.slice(0,i);
+      i++;
+      if(sound)playTyping();
+      setTimeout(step,delay);
+    }else{
+      caret.remove();
+      if(onDone)onDone();
+    }
+  })();
+}
+function runEgg(){
+  S.work='egg';
+  $('appwin').style.display='none';
+  hideToast();
+  stopRec();
+  $('recbar').style.display='none';
+  $('whitetab').style.display='none';
+  audio();
+  $('egg').style.display='flex';
+  $('eggOps').style.display='none';
+  typewriter($('eggBig'),'不 要 拒 绝 我',210,()=>{
+    setTimeout(()=>{
+      $('eggBig').innerHTML='';
+      typewriter($('eggBig'),'……',400,()=>{
+        setTimeout(()=>{
+          $('eggBig').innerHTML='';
+          typewriter($('eggBig'),'或者，我们见一面吧。',120,()=>{
+            setTimeout(()=>{
+              const norm=$('eggNorm');
+              typewriter(norm,'去约会，怎么样？',120,()=>{
+                setTimeout(()=>{showEggChoices();},700);
+              },false);
+            },400);
+          },false);
+        },500);
+      },false);
+    },3000);
+  },false);
+}
+function showEggChoices(){
+  $('eggOps').style.display='flex';
+  const no=$('eggNo'),yes=$('eggYes');
+  let egShift=0;
+  no.classList.add('no-dodge');
+  no.addEventListener('mouseenter',()=>{
+    egShift-=60;no.style.marginLeft=egShift+'px';playPop();
+    clearTimeout(no._tm);
+    no._tm=setTimeout(()=>{egShift=0;no.style.marginLeft='0px';},300);
+  });
+  no.addEventListener('click',()=>{
+    playErrorBeep();
+    no.style.display='none';   // 拒绝消失，只剩答应
+  });
+  yes.addEventListener('click',pinkEnding);
+}
+function pinkEnding(){
+  S.work='pink';
+  $('egg').style.display='none';
+  $('eggOps').style.display='none';
+  audio();
+  playSubmit();
+  const pk=$('pinkend');
+  pk.innerHTML='<div id="pinkMsg"></div><div class="endTitle" id="pinkTitle"></div>';
+  pk.style.display='flex';
+  const m=$('pinkMsg');
+  const l1=document.createElement('div');
+  const l2=document.createElement('div');
+  l2.style.marginTop='26px';
+  m.appendChild(l1);m.appendChild(l2);
+  typewriter(l1,'我会好好打扮的，你会期待的，对吧？',90,()=>{
+    setTimeout(()=>{
+      typewriter(l2,'我的女朋友。',120,()=>{
+        // 停留 3 秒 → 消息淡出消失 → 正中央浮现结局名
+        setTimeout(()=>{
+          $('pinkMsg').style.transition='opacity 1s ease';
+          $('pinkMsg').style.opacity='0';
+          setTimeout(()=>{ showEndingTitle('达成结局：硬气的牛马和她的痴汉上司','pinkTitle'); },900);
+        },3000);
+      },false);
+    },1500);
+  },false);
+}
+function showEndingTitle(txt,id){
+  const el=$(id);
+  if(!el)return;
+  el.textContent=txt;
+  el.classList.remove('show');void el.offsetWidth;el.classList.add('show');
+}
+
+/* ================= 初始化 ================= */
+startBoot();
+</script>
+</body>
+</html>
