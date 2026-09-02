@@ -83,7 +83,6 @@ tr.phantom td.x{text-align:center}
 #sticky .ntxt{white-space:pre-line;transform:rotate(-0.6deg)}
 #sticky.special{background:#ffe9e6;border-top-color:#f3b7ae}
 #sticky.special .ntxt{font-family:"KaiTi","楷体",cursive;font-size:17px}
-#sticky .ntxt .authnote{display:block;color:#a35a2a;font-family:"SimSun",sans-serif;font-size:12px;line-height:1.6;margin-top:2px}
 
 /* 警告条 */
 #warn{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:#fdecea;border:2px solid #c0392b;color:#c0392b;padding:8px 22px;font-size:15px;font-weight:bold;z-index:20;display:none;box-shadow:0 2px 8px rgba(0,0,0,.3)}
@@ -213,8 +212,6 @@ body.qk-all{animation:qka .16s 1}
   table.grid{width:max-content;min-width:100%;table-layout:auto}
   table.grid th,table.grid td{white-space:nowrap}
   table.grid td input{min-width:0}
-  #wtLine{font-size:17px;white-space:normal;line-height:1.6}
-  #sticky .ntxt .authnote{font-size:11px;line-height:1.5}
 }
 </style>
 </head>
@@ -562,7 +559,7 @@ function startWork1(){
   renderWork1();
   $('sticky').style.display='block';
   $('sticky').classList.remove('special');
-  $('ntxt').innerHTML=ROW1[S.w1row].n+'  '+ROW1[S.w1row].p+'<span class="authnote"><br><br>作者留言：手机号随意填数字即可，<br>不过你也可以试试别的？</span>';
+  $('ntxt').textContent=ROW1[S.w1row].n+'  '+ROW1[S.w1row].p+'\n\n作者留言：手机号随意填数字即可，不过你也可以试试别的？';
 }
 function renderWork1(){
   const c=$('content');c.innerHTML='';
