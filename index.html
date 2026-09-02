@@ -198,6 +198,21 @@ body.qk-all{animation:qka .16s 1}
 #pinkMsg{font-size:30px;line-height:2;}
 #pinkend .endTitle{color:#a83a72}
 #pinkend .fe-line{font-size:19px;line-height:2.2;letter-spacing:2px;color:#a83a72;margin-top:28px;opacity:0;animation:fein 4s linear forwards}
+
+/* ========== 移动端适配 ========== */
+@media (max-width:680px){
+  #appwin{width:97vw;left:1.5vw;top:auto;bottom:30px;height:calc(100vh - 140px);min-height:0;transform:none}
+  #sticky{left:10px;top:10px;bottom:auto;width:44vw;padding:10px 10px;font-size:13.5px;line-height:1.7;transform:rotate(-1deg);border-top-width:16px;z-index:45;box-shadow:2px 2px 6px rgba(0,0,0,.35)}
+  #sticky .nhead{top:-13px;font-size:11px}
+  #sticky .ntxt{transform:rotate(0)}
+  #appwin .titlebar{font-size:13px}
+  #appwin .menubar{font-size:12px}
+  .desk-icons{top:8px;left:8px;width:100px}
+  /* 表头列宽由 JS 内联设定，此处确保输入框可露出 */
+  table.grid{width:max-content;min-width:100%;table-layout:auto}
+  table.grid th,table.grid td{white-space:nowrap}
+  table.grid td input{min-width:0}
+}
 </style>
 </head>
 <body>
@@ -554,7 +569,7 @@ function renderWork1(){
   c.appendChild(tb);
   const tbl=document.createElement('table');
   tbl.className='grid';
-  tbl.innerHTML='<thead><tr><th style="width:40px">#</th><th style="width:150px">姓名</th><th>电话</th><th style="width:200px">备注（选填）</th></tr></thead><tbody id="tb1"></tbody>';
+  tbl.innerHTML='<thead><tr><th style="width:42px">#</th><th style="width:170px">姓名</th><th style="width:170px">电话</th><th style="width:110px">备注（选填）</th></tr></thead><tbody id="tb1"></tbody>';
   c.appendChild(tbl);
   const tb1=$('tb1');
   enteredRows.forEach((r,i)=>{
