@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>小倩的姻缘签</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'PingFang SC','Microsoft YaHei','Noto Serif SC',serif;background:#0a0a0a;color:#c8c0b8;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#app{width:100%;height:100%;max-width:430px;margin:0 auto;position:relative;overflow:hidden;background:#0a0a0a}
+
+.screen{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:24px;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity 1.2s ease}
+.screen.active{opacity:1;pointer-events:auto}
+
+/* ===== Intro ===== */
+#intro{text-align:center;justify-content:flex-start;padding-top:40px}
+#intro .line{font-size:17px;line-height:2.2;color:#a09888;opacity:0;transform:translateY(12px);transition:opacity 1s ease,transform 1s ease;letter-spacing:1px}
+#intro .line.show{opacity:1;transform:translateY(0)}
+#intro .line.xiaoqian{color:#8b3a62;font-style:italic;letter-spacing:2px}
+
+/* ===== Choices ===== */
+.choice-area{display:flex;flex-direction:column;gap:14px;width:100%;max-width:320px;margin-top:32px}
+.choice-btn{padding:14px 0;background:rgba(139,58,98,0.12);border:1px solid rgba(139,58,98,0.35);border-radius:8px;color:#c8c0b8;font-size:16px;font-family:inherit;letter-spacing:2px;cursor:pointer;transition:all .3s;touch-action:manipulation}
+.choice-btn:active{background:rgba(139,58,98,0.3);border-color:#8b3a62;transform:scale(0.97)}
+
+/* ===== Temple Scene ===== */
+#temple{background:#0a0a0a}
+#temple .scene-text{font-size:15px;line-height:2;color:#8a7e72;text-align:center;max-width:340px;opacity:0;transition:opacity 1s}
+#temple .scene-text.show{opacity:1}
+#temple .xiaoqian-text{color:#8b3a62;font-size:16px;line-height:2;text-align:center;max-width:340px;opacity:0;transition:opacity 1s;letter-spacing:1px}
+#temple .xiaoqian-text.show{opacity:1}
+
+/* ===== Stick Shaking ===== */
+#shake-screen{flex-direction:column;justify-content:center;align-items:center;background:#0a0a0a}
+.stick-container{position:relative;width:120px;height:280px;margin:0 auto 20px}
+.stick-tube{width:80px;height:200px;background:linear-gradient(180deg,#3d2b1a,#2a1c10);border:2px solid #5a4030;border-radius:8px 8px 4px 4px;position:absolute;bottom:0;left:50%;transform:translateX(-50%);overflow:hidden}
+.stick-tube::before{content:'';position:absolute;top:-6px;left:-4px;right:-4px;height:12px;background:#5a4030;border-radius:4px 4px 0 0}
+.stick{width:4px;height:70px;background:linear-gradient(180deg,#d4c4a0,#b8a880);position:absolute;bottom:20px;border-radius:2px;transform-origin:bottom center;transition:transform .15s}
+.stick-tipped{position:absolute;bottom:-30px;left:50%;transform:translateX(-50%);width:5px;height:60px;background:linear-gradient(180deg,#d4c4a0,#b8a880);border-radius:2px;opacity:0;transition:opacity .5s .3s}
+.stick-tipped.show{opacity:1}
+.shake-hint{font-size:14px;color:#6a5e52;text-align:center;margin-top:12px;letter-spacing:1px}
+.shake-progress{width:160px;height:3px;background:rgba(139,58,98,0.2);border-radius:2px;margin:16px auto 0;overflow:hidden}
+.shake-progress-fill{height:100%;width:0;background:#8b3a62;border-radius:2px;transition:width .2s}
+
+/* ===== Fortune Display ===== */
+#fortune-screen{background:#0a0a0a;flex-direction:column}
+.fortune-card{text-align:center;padding:40px 30px;border:1px solid rgba(139,58,98,0.3);border-radius:12px;background:rgba(20,15,12,0.9);max-width:320px;width:90%;opacity:0;transform:scale(0.9);transition:all .8s}
+.fortune-card.show{opacity:1;transform:scale(1)}
+.fortune-card .fortune-num{font-size:14px;color:#6a5e52;margin-bottom:8px}
+.fortune-card .fortune-level{font-size:28px;font-weight:700;margin-bottom:12px;letter-spacing:4px}
+.fortune-card .fortune-level.upper{color:#c0392b}
+.fortune-card .fortune-level.middle{color:#8a7e72}
+.fortune-card .fortune-level.lower{color:#4a1a2a}
+.fortune-card .fortune-level.blank{color:#3a3a3a}
+.fortune-card .fortune-text{font-size:20px;color:#c8c0b8;letter-spacing:3px;line-height:1.8}
+.fortune-card .fortune-meaning{font-size:13px;color:#6a5e52;margin-top:16px;letter-spacing:1px}
+
+/* ===== Branch A: Red Thread ===== */
+#branch-a{background:#0a0a0a;flex-direction:column;padding:20px}
+.branch-a-content{max-width:360px;width:100%}
+.xiaoqian-line{font-size:15px;line-height:2;color:#c88090;letter-spacing:1px;margin-bottom:12px;opacity:0;transition:opacity 0.8s}
+.xiaoqian-line.show{opacity:1}
+.narrator-line{font-size:14px;line-height:2;color:#7a6e62;margin-bottom:12px;opacity:0;transition:opacity 0.8s}
+.narrator-line.show{opacity:1}
+
+/* Red Thread Interactive */
+.red-thread-area{position:relative;width:100%;height:200px;margin:20px 0;display:flex;justify-content:space-between;align-items:center;padding:0 30px}
+.bell{font-size:36px;cursor:pointer;transition:transform .3s;filter:grayscale(0.3)}
+.bell.ringing{animation:ring .3s ease 3}
+@keyframes ring{0%,100%{transform:rotate(0)}25%{transform:rotate(15deg)}75%{transform:rotate(-15deg)}}
+.thread-svg{position:absolute;top:50%;left:30px;right:30px;height:80px;transform:translateY(-50%);pointer-events:none}
+.thread-path{fill:none;stroke:#c0392b;stroke-width:3;stroke-dasharray:300;stroke-dashoffset:300;transition:stroke-dashoffset 2s}
+.thread-path.drawn{stroke-dashoffset:0}
+
+/* Kiss area */
+.kiss-area{text-align:center;margin:20px 0}
+.kiss-btn{padding:16px 40px;background:rgba(192,57,43,0.15);border:1px solid rgba(192,57,43,0.4);border-radius:30px;color:#c0392b;font-size:16px;font-family:inherit;letter-spacing:3px;cursor:pointer;transition:all .3s;touch-action:manipulation;position:relative;overflow:hidden}
+.kiss-btn::after{content:'';position:absolute;top:0;left:0;width:0;height:100%;background:rgba(192,57,43,0.3);transition:width 3s linear;z-index:0}
+.kiss-btn.pressing::after{width:100%}
+.kiss-btn:active{transform:scale(0.96)}
+
+/* ===== Branch B: One Meeting ===== */
+#branch-b{background:#0a0a0a;flex-direction:column;padding:20px}
+.branch-b-content{max-width:360px;width:100%}
+.question-input{width:100%;padding:12px 16px;background:rgba(139,58,98,0.08);border:1px solid rgba(139,58,98,0.25);border-radius:8px;color:#c8c0b8;font-size:16px;font-family:inherit;outline:none;margin:12px 0;text-align:center}
+.question-input::placeholder{color:#5a4e42}
+.question-choices{display:flex;gap:12px;margin:12px 0}
+.question-choices .choice-btn{flex:1;padding:12px;font-size:14px}
+
+/* Fake permission popup */
+.fake-permission{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;justify-content:center;align-items:center;z-index:999;opacity:0;pointer-events:none;transition:opacity .5s}
+.fake-permission.show{opacity:1;pointer-events:auto}
+.permission-card{background:#1c1c1e;border-radius:14px;padding:24px 20px;max-width:300px;width:85%;text-align:center;border:1px solid #333}
+.permission-card .perm-icon{font-size:40px;margin-bottom:12px}
+.permission-card .perm-title{font-size:16px;color:#fff;margin-bottom:6px}
+.permission-card .perm-desc{font-size:13px;color:#8e8e93;margin-bottom:20px;line-height:1.5}
+.permission-card .perm-btns{display:flex;gap:12px}
+.permission-card .perm-btn{flex:1;padding:10px;border-radius:8px;border:none;font-size:15px;font-family:inherit;cursor:pointer}
+.permission-card .perm-btn.allow{background:#0a84ff;color:#fff}
+.permission-card .perm-btn.deny{background:#2c2c2e;color:#0a84ff}
+
+/* Receipt */
+.receipt{background:rgba(20,15,12,0.95);border:1px solid rgba(139,58,98,0.25);border-radius:8px;padding:24px 20px;margin:16px 0;font-size:13px;line-height:2;color:#8a7e72;letter-spacing:0.5px}
+.receipt .receipt-label{color:#6a5e52}
+.receipt .receipt-value{color:#c8c0b8}
+.receipt .receipt-msg{color:#8b3a62;font-weight:600;margin-top:8px}
+
+/* ===== Branch C: Horror Chase ===== */
+#branch-c{background:#0a0a0a;flex-direction:column;padding:20px}
+.branch-c-content{max-width:360px;width:100%;text-align:center}
+.shake-text{animation:textShake .15s infinite}
+@keyframes textShake{0%{transform:translate(0)}25%{transform:translate(-2px,1px)}50%{transform:translate(2px,-1px)}75%{transform:translate(-1px,-2px)}100%{transform:translate(1px,1px)}}
+.chase-scene{font-size:15px;line-height:2;color:#8a7e72;margin-bottom:20px;opacity:0;transition:opacity .5s}
+.chase-scene.show{opacity:1}
+.chase-timer{font-size:14px;color:#c0392b;margin-bottom:12px;letter-spacing:1px}
+.chase-choices{display:flex;flex-direction:column;gap:12px}
+.chase-choices .choice-btn{border-color:rgba(192,57,43,0.3);background:rgba(192,57,43,0.08)}
+.chase-choices .choice-btn:active{background:rgba(192,57,43,0.25)}
+.chase-error{font-size:14px;color:#c0392b;line-height:1.8;text-align:center;opacity:0;transition:opacity .5s;letter-spacing:0.5px}
+.chase-error.show{opacity:1}
+.horror-flash{position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:998;opacity:0;pointer-events:none}
+
+/* ===== Branch D: Meta ===== */
+#branch-d{background:#0a0a0a;flex-direction:column;padding:20px}
+.branch-d-content{max-width:360px;width:100%;text-align:center}
+.meta-time{font-size:14px;color:#5a5a5a;letter-spacing:1px;margin:16px 0}
+.meta-input{width:100%;padding:12px 16px;background:rgba(50,50,50,0.3);border:1px solid #3a3a3a;border-radius:8px;color:#c8c0b8;font-size:15px;font-family:inherit;outline:none;margin:12px 0;text-align:center}
+.meta-input::placeholder{color:#4a4a4a}
+.meta-result{font-size:14px;color:#5a5a5a;line-height:2;margin:16px 0;letter-spacing:0.5px;opacity:0;transition:opacity 1s}
+.meta-result.show{opacity:1}
+
+/* ===== Ending Screen ===== */
+#ending{background:#000;flex-direction:column;text-align:center;padding:40px}
+.ending-line{font-size:16px;color:#5a5a5a;letter-spacing:2px;line-height:2.2;opacity:0;transition:opacity 1.5s}
+.ending-line.show{opacity:1}
+.ending-line.big{font-size:20px;color:#8a7e72;font-weight:600}
+.ending-line.final{font-size:14px;color:#3a3a3a;margin-top:30px}
+
+/* ===== Screen Flash ===== */
+#flash-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:9999;opacity:0;pointer-events:none;transition:opacity .1s}
+#dark-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:9998;opacity:0;pointer-events:none;transition:opacity 1s}
+
+/* ===== Utilities ===== */
+.fade-in{animation:fadeIn 1s ease forwards}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.screen-shake{animation:screenShake .3s ease}
+@keyframes screenShake{0%,100%{transform:translate(0)}20%{transform:translate(-4px,2px)}40%{transform:translate(4px,-2px)}60%{transform:translate(-2px,4px)}80%{transform:translate(2px,-4px)}}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- Intro -->
+  <div id="intro" class="screen active"></div>
+
+  <!-- Temple -->
+  <div id="temple" class="screen"></div>
+
+  <!-- Shake Screen -->
+  <div id="shake-screen" class="screen"></div>
+
+  <!-- Fortune Display -->
+  <div id="fortune-screen" class="screen"></div>
+
+  <!-- Branch A -->
+  <div id="branch-a" class="screen"></div>
+
+  <!-- Branch B -->
+  <div id="branch-b" class="screen"></div>
+
+  <!-- Branch C -->
+  <div id="branch-c" class="screen"></div>
+
+  <!-- Branch D -->
+  <div id="branch-d" class="screen"></div>
+
+  <!-- Ending -->
+  <div id="ending" class="screen"></div>
+</div>
+
+<div id="flash-overlay"></div>
+<div id="dark-overlay"></div>
+
+<div id="fake-permission" class="fake-permission">
+  <div class="permission-card">
+    <div class="perm-icon">📍</div>
+    <div class="perm-title">"小倩" 请求访问您的位置信息</div>
+    <div class="perm-desc">小倩想要获取您的位置，以"记住您今晚的住所"</div>
+    <div class="perm-btns">
+      <button class="perm-btn deny" onclick="Game.onPermDeny()">拒绝</button>
+      <button class="perm-btn allow" onclick="Game.onPermAllow()">允许</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var Game=(function(){
+  var app=document.getElementById('intro');
+  var screens={};
+  ['intro','temple','shake-screen','fortune-screen','branch-a','branch-b','branch-c','branch-d','ending'].forEach(function(id){
+    screens[id]=document.getElementById(id);
+  });
+  var flashEl=document.getElementById('flash-overlay');
+  var darkEl=document.getElementById('dark-overlay');
+  var permEl=document.getElementById('fake-permission');
+
+  var state={
+    branch:null,
+    permShown:false,
+    permResult:null,
+    age:'',
+    alone:null,
+    windowClosed:null,
+    pillowEmpty:null,
+    playerName:'',
+    shakeCount:0,
+    shakeTarget:15,
+    shaking:false,
+    KissHeld:false,
+    kissTimer:null,
+    chaseIdx:0,
+    chaseWrong:0,
+    timerInterval:null,
+    branchAStep:0,
+    branchBStep:0,
+    introDone:false,
+    forceBranchC:false
+  };
+
+  function vibrate(p){if(navigator.vibrate)try{navigator.vibrate(p)}catch(e){}}
+  function sleep(ms){return new Promise(function(r){setTimeout(r,ms)})}
+  function flash(dur){flashEl.style.opacity='1';setTimeout(function(){flashEl.style.opacity='0'},dur||100)}
+  function screenShake(el){el.classList.add('screen-shake');setTimeout(function(){el.classList.remove('screen-shake')},300)}
+
+  function showScreen(id){
+    Object.keys(screens).forEach(function(k){
+      screens[k].classList.remove('active');
+    });
+    if(screens[id])screens[id].classList.add('active');
+  }
+
+  function addLine(parent,text,cls,delay,extra){
+    var div=document.createElement('div');
+    div.className=cls||'';
+    div.textContent=text;
+    div.style.whiteSpace='pre-line';
+    parent.appendChild(div);
+    if(extra)Object.keys(extra).forEach(function(k){div.style[k]=extra[k]});
+    setTimeout(function(){div.classList.add('show')},delay||100);
+    return div;
+  }
+
+  function addHTML(parent,html,cls,delay){
+    var div=document.createElement('div');
+    div.className=cls||'';
+    div.innerHTML=html;
+    parent.appendChild(div);
+    setTimeout(function(){div.classList.add('show')},delay||100);
+    return div;
+  }
+
+  // ===== INTRO =====
+  function runIntro(){
+    showScreen('intro');
+    var el=screens.intro;
+    el.innerHTML='';
+    var lines=[
+      '夜色浓稠如墨。',
+      '你不知为何，竟走到了一座破败的古庙前。',
+      '门楣半塌，荒草没膝。',
+      '你本该转身离去的。',
+      '可你听见了——',
+      '一个女子在低声哼着不知名的小调。'
+    ];
+    var t=600;
+    lines.forEach(function(txt,i){
+      addLine(el,txt,'line',t);
+      t+=1800;
+    });
+    setTimeout(function(){vibrate(80)},t-1200);
+    t+=1200;
+    setTimeout(function(){
+      addLine(el,'那声音，像是从庙里传来的。','line',0);
+      addLine(el,'又像是……从你身后。','line',800);
+    },t-600);
+    t+=2000;
+    setTimeout(function(){vibrate(120)},t-800);
+    t+=800;
+    setTimeout(function(){
+      addLine(el,'你站在门前。','line',0);
+      addLine(el,'门是虚掩的。','line',800);
+      addLine(el,'门缝里，透出一线微弱的烛光。','line',1600);
+    },t);
+    t+=3000;
+    setTimeout(function(){
+      addLine(el,'"既然来了，便进来吧。"','line xiaoqian',0);
+      addLine(el,'"外面……有东西在跟着你。"','line xiaoqian',1400);
+    },t);
+    t+=3200;
+    setTimeout(function(){
+      var choices=document.createElement('div');
+      choices.className='choice-area';
+      choices.innerHTML='<button class="choice-btn" onclick="Game.choiceEnter()">推门而入</button><button class="choice-btn" onclick="Game.choiceStay()">留在原地</button>';
+      el.appendChild(choices);
+    },t);
+  }
+
+  function choiceStay(){
+    vibrate(60);
+    var el=screens.intro;
+    var choices=el.querySelector('.choice-area');
+    if(choices)choices.remove();
+    addLine(el,'你站在原地，没有动。','line',0);
+    addLine(el,'风停了。','line',800);
+    addLine(el,'那哼唱声也停了。','line',1600);
+    setTimeout(function(){
+      addLine(el,'"那你便留在那儿吧。"','line xiaoqian',0);
+      addLine(el,'"只是别回头。"','line xiaoqian',1200);
+    },2600);
+    setTimeout(function(){
+      addLine(el,'你忽然觉得后颈一凉。','line',0);
+      addLine(el,'像是有人，对着你的脖子，轻轻吹了一口气。','line',800);
+      vibrate(100);
+    },5000);
+    setTimeout(function(){
+      darkEl.style.transition='opacity 2s';
+      darkEl.style.opacity='1';
+      setTimeout(function(){
+        el.innerHTML='';
+        darkEl.style.opacity='0';
+        addLine(el,'……','line',0);
+        addLine(el,'你终究还是走进了庙里。','line',1000);
+        addLine(el,'门在身后，自己关上了。','line',2000);
+        setTimeout(function(){vibrate(150)},3000);
+        setTimeout(function(){enterTemple()},4000);
+      },2500);
+    },6500);
+  }
+
+  function choiceEnter(){
+    vibrate(60);
+    var el=screens.intro;
+    var choices=el.querySelector('.choice-area');
+    if(choices)choices.remove();
+    addLine(el,'你推开了门。','line',0);
+    addLine(el,'门轴发出长长的呻吟，像一声叹息。','line',1000);
+    setTimeout(function(){enterTemple()},2500);
+  }
+
+  // ===== TEMPLE =====
+  function enterTemple(){
+    showScreen('temple');
+    var el=screens.temple;
+    el.innerHTML='';
+    var lines=[
+      '庙内比外面更暗。',
+      '只有佛像前一根残烛，火苗如豆。',
+      '蛛网从房梁垂落，像一层层灰白的帘幕。',
+      '而她就坐在烛火旁。',
+      '你看不清她的脸。',
+      '只看见一袭红衣，像一团凝固的血。'
+    ];
+    var t=400;
+    lines.forEach(function(txt){
+      addLine(el,txt,'narrator-line',t);
+      t+=1200;
+    });
+    t+=800;
+    setTimeout(function(){
+      addLine(el,'"坐吧。"','xiaoqian-line',0);
+      addLine(el,'"庙里简陋，没什么好招待的。"','xiaoqian-line',1000);
+    },t);
+    t+=2500;
+    setTimeout(function(){
+      addLine(el,'你鬼使神差地坐了下来。','narrator-line',0);
+      addLine(el,'烛火晃了一下。','narrator-line',800);
+      addLine(el,'你终于看清了她的脸。','narrator-line',1600);
+      addLine(el,'很白。白得像纸。','narrator-line',2400);
+      addLine(el,'很美。美得不像活人。','narrator-line',3200);
+    },t);
+    t+=4800;
+    setTimeout(function(){
+      addLine(el,'"我名小倩。"','xiaoqian-line',0);
+      addLine(el,'"葬骨于此，十八年了。"','xiaoqian-line',1200);
+    },t);
+    t+=3000;
+    setTimeout(function(){
+      addLine(el,'"你是迷路进来的吧？"','xiaoqian-line',0);
+      addLine(el,'"这庙里，平日里没有人来。"','xiaoqian-line',1200);
+      addLine(el,'"你……是第一个，陪我说了这么久话的。"','xiaoqian-line',2400);
+      vibrate(60);
+    },t);
+    t+=4200;
+    setTimeout(function(){
+      addLine(el,'"既然遇上了，便是缘分。"','xiaoqian-line',0);
+      addLine(el,'"我这里有一只签筒。"','xiaoqian-line',1000);
+      addLine(el,'"不如……你摇一支？"','xiaoqian-line',2000);
+      addLine(el,'"看看你我之间，是什么缘分。"','xiaoqian-line',3000);
+    },t);
+    t+=4500;
+    setTimeout(function(){
+      addLine(el,'"摇吧。"','xiaoqian-line',0);
+      addLine(el,'"心诚则灵。"','xiaoqian-line',1000);
+    },t);
+    t+=2500;
+    setTimeout(function(){startShaking()},t);
+  }
+
+  // ===== SHAKING =====
+  var motionSupported=false;
+  var lastAccel={x:0,y:0,z:0};
+  var shakeListenersAttached=false;
+  var currentShakeEl=null;
+
+  function removeShakeListeners(){
+    window.removeEventListener('devicemotion',onMotion);
+    if(currentShakeEl&&shakeListenersAttached){
+      currentShakeEl.removeEventListener('touchstart',onTapShake);
+      currentShakeEl.removeEventListener('mousedown',onTapShake);
+      shakeListenersAttached=false;
+    }
+  }
+
+  function startShaking(){
+    removeShakeListeners();
+    showScreen('shake-screen');
+    var el=screens.shake-screen;
+    el.innerHTML='';
+    state.shakeCount=0;
+    currentShakeEl=el;
+
+    // Draw sticks in tube
+    var container=document.createElement('div');
+    container.className='stick-container';
+    var tube=document.createElement('div');
+    tube.className='stick-tube';
+    for(var i=0;i<5;i++){
+      var stick=document.createElement('div');
+      stick.className='stick';
+      stick.style.left=(15+i*12)+'px';
+      stick.style.transform='rotate('+(Math.random()*10-5)+'deg)';
+      tube.appendChild(stick);
+    }
+    container.appendChild(tube);
+    var tipped=document.createElement('div');
+    tipped.className='stick-tipped';
+    tipped.id='tipped-stick';
+    container.appendChild(tipped);
+    el.appendChild(container);
+
+    var hint=addLine(el,'摇动手机，摇出你的签','shake-hint',200);
+    var prog=document.createElement('div');
+    prog.className='shake-progress';
+    var fill=document.createElement('div');
+    fill.className='shake-progress-fill';
+    fill.id='shake-fill';
+    prog.appendChild(fill);
+    el.appendChild(prog);
+
+    // Try device motion
+    if(window.DeviceMotionEvent){
+      if(typeof DeviceMotionEvent.requestPermission==='function'){
+        // iOS 13+
+        DeviceMotionEvent.requestPermission().then(function(s){
+          if(s==='granted'){
+            motionSupported=true;
+            window.addEventListener('devicemotion',onMotion);
+          }
+        }).catch(function(){});
+      }else{
+        motionSupported=true;
+        window.addEventListener('devicemotion',onMotion);
+      }
+    }
+
+    // Fallback: tap/click to shake
+    el.addEventListener('touchstart',onTapShake,{passive:true});
+    el.addEventListener('mousedown',onTapShake);
+    shakeListenersAttached=true;
+  }
+
+  function onMotion(e){
+    var a=e.accelerationIncludingGravity||e.acceleration;
+    if(!a)return;
+    var dx=Math.abs(a.x-lastAccel.x);
+    var dy=Math.abs(a.y-lastAccel.y);
+    var dz=Math.abs(a.z-lastAccel.z);
+    lastAccel={x:a.x||0,y:a.y||0,z:a.z||0};
+    if(dx+dy+dz>18){
+      addShakeProgress();
+    }
+  }
+
+  var lastTapTime=0;
+  function onTapShake(){
+    var now=Date.now();
+    if(now-lastTapTime<150)return;
+    lastTapTime=now;
+    addShakeProgress();
+  }
+
+  function addShakeProgress(){
+    if(state.shakeCount>=state.shakeTarget)return;
+    state.shakeCount++;
+    vibrate(30);
+    var fill=document.getElementById('shake-fill');
+    if(fill)fill.style.width=(state.shakeCount/state.shakeTarget*100)+'%';
+    // Animate sticks
+    var sticks=document.querySelectorAll('#shake-screen .stick');
+    sticks.forEach(function(s){
+      s.style.transform='rotate('+(Math.random()*20-10)+'deg)';
+    });
+    if(state.shakeCount>=state.shakeTarget){
+      setTimeout(function(){drawFortune()},500);
+    }
+  }
+
+  function drawFortune(){
+    removeShakeListeners();
+    var tipped=document.getElementById('tipped-stick');
+    if(tipped)tipped.classList.add('show');
+    vibrate(200);
+    setTimeout(function(){showFortune()},1200);
+  }
+
+  // ===== FORTUNE =====
+  function showFortune(){
+    showScreen('fortune-screen');
+    var el=screens.fortune-screen;
+    el.innerHTML='';
+    vibrate(150);
+
+    // Decide branch
+    var rand=Math.random();
+    var branch;
+    if(state.forceBranchC){
+      branch='C';
+      state.forceBranchC=false;
+    }else if(rand<0.3)branch='A';
+    else if(rand<0.6)branch='B';
+    else if(rand<0.9)branch='C';
+    else branch='D';
+    state.branch=branch;
+
+    var card=document.createElement('div');
+    card.className='fortune-card';
+
+    if(branch==='A'){
+      card.innerHTML='<div class="fortune-num">第〇七签</div><div class="fortune-level upper">上上</div><div class="fortune-text">天赐良缘<br>红绳自牵</div><div class="fortune-meaning">姻缘天定</div>';
+    }else if(branch==='B'){
+      card.innerHTML='<div class="fortune-num">第幺九签</div><div class="fortune-level middle">中平</div><div class="fortune-text">阴阳相隔<br>一面之缘</div><div class="fortune-meaning">有缘无分</div>';
+    }else if(branch==='C'){
+      card.innerHTML='<div class="fortune-num">第叁叁签</div><div class="fortune-level lower">下下</div><div class="fortune-text">血光之灾<br>活人勿近</div><div class="fortune-meaning">大凶</div>';
+    }else{
+      card.innerHTML='<div class="fortune-num">第〇〇签</div><div class="fortune-level blank">无字</div><div class="fortune-text"></div><div class="fortune-meaning">命数之外</div>';
+    }
+
+    el.appendChild(card);
+    setTimeout(function(){card.classList.add('show')},300);
+
+    setTimeout(function(){
+      if(branch==='A')startBranchA();
+      else if(branch==='B')startBranchB();
+      else if(branch==='C')startBranchC();
+      else startBranchD();
+    },3000);
+  }
+
+  // ===== BRANCH A: RED THREAD =====
+  function startBranchA(){
+    showScreen('branch-a');
+    var el=screens.branch-a;
+    el.innerHTML='';
+    state.branchAStep=0;
+    vibrate(100);
+
+    addLine(el,'"上上签……"','xiaoqian-line',600);
+    addLine(el,'"已经很久，很久没有人抽到过了。"','xiaoqian-line',2000);
+    addLine(el,'她抬起头看你。那双枯井般的眼睛里，忽然有了水光。','narrator-line',3500);
+    addLine(el,'"你与我的命……"','xiaoqian-line',5000);
+    addLine(el,'"果然有红绳相牵。"','xiaoqian-line',6000);
+
+    setTimeout(function(){
+      var content=document.createElement('div');
+      content.className='branch-a-content';
+      content.style.opacity='0';content.style.transition='opacity 1s';
+
+      var threadArea=document.createElement('div');
+      threadArea.className='red-thread-area';
+      threadArea.innerHTML='<div class="bell" id="bell-left">🔔</div><svg class="thread-svg" viewBox="0 0 200 80"><path class="thread-path" id="thread-path" d="M 0 40 Q 50 10 100 40 Q 150 70 200 40"/></svg><div class="bell" id="bell-right">🔔</div>';
+      content.appendChild(threadArea);
+
+      addLine(content,'"来。把红绳系上。系上了，你就是我的人了。"','xiaoqian-line',800);
+      addLine(content,'【点击铃铛，系上红绳】','narrator-line',1800,{color:'#5a4e42',fontSize:'13px',textAlign:'center'});
+
+      el.appendChild(content);
+      setTimeout(function(){content.style.opacity='1'},2000);
+
+      setTimeout(function(){
+        var path=document.getElementById('thread-path');
+        if(path)path.classList.add('drawn');
+        vibrate([50,100,50]);
+      },3500);
+
+      // Bell click handler
+      setTimeout(function(){
+        var bells=el.querySelectorAll('.bell');
+        bells.forEach(function(b){
+          b.addEventListener('click',function(){
+            vibrate(80);
+            b.classList.add('ringing');
+            setTimeout(function(){b.classList.remove('ringing')},1000);
+            state.branchAStep++;
+            if(state.branchAStep>=2){
+              setTimeout(function(){showKissChoice()},800);
+            }
+          });
+        });
+      },2500);
+    },2000);
+  }
+
+  function showKissChoice(){
+    var el=screens.branch-a;
+    var old=el.querySelector('.branch-a-content');
+    if(old)old.remove();
+
+    addLine(el,'"从此，你便是我的人了。"','xiaoqian-line',400);
+    addLine(el,'"只是……我已是个死人。"','xiaoqian-line',1600);
+    addLine(el,'她凑近了一些。你能闻到她身上的气息。不是脂粉香。是潮湿的泥土味。还有一丝……若有若无的血腥。','narrator-line',3000);
+    addLine(el,'"你可敢亲我一下？"','xiaoqian-line',5000);
+
+    setTimeout(function(){
+      var area=document.createElement('div');
+      area.className='kiss-area';
+      area.innerHTML='<button class="kiss-btn" id="kiss-btn">亲吻她</button><div style="margin-top:14px"><button class="choice-btn" onclick="Game.kissRetreat()" style="font-size:14px;padding:10px 24px">退缩</button></div>';
+      el.appendChild(area);
+
+      var btn=document.getElementById('kiss-btn');
+      var pressing=false;
+      var elapsed=0;
+      var interval=null;
+
+      btn.addEventListener('touchstart',function(e){
+        e.preventDefault();
+        pressing=true;
+        btn.classList.add('pressing');
+        elapsed=0;
+        vibrate(50);
+        interval=setInterval(function(){
+          elapsed+=100;
+          if(elapsed>=100){
+            vibrate(40);
+          }
+          if(elapsed>=3000){
+            clearInterval(interval);
+            pressing=false;
+            btn.classList.remove('pressing');
+            Game.kissComplete();
+          }
+        },100);
+      });
+      btn.addEventListener('touchend',function(){
+        if(pressing){
+          clearInterval(interval);
+          pressing=false;
+          btn.classList.remove('pressing');
+          btn.style.width='';
+        }
+      });
+      // Mouse fallback
+      btn.addEventListener('mousedown',function(e){
+        pressing=true;
+        btn.classList.add('pressing');
+        elapsed=0;
+        vibrate(50);
+        interval=setInterval(function(){
+          elapsed+=100;
+          if(elapsed>=100)vibrate(40);
+          if(elapsed>=3000){
+            clearInterval(interval);
+            pressing=false;
+            btn.classList.remove('pressing');
+            Game.kissComplete();
+          }
+        },100);
+      });
+      btn.addEventListener('mouseup',function(){
+        if(pressing){
+          clearInterval(interval);
+          pressing=false;
+          btn.classList.remove('pressing');
+        }
+      });
+    },6000);
+  }
+
+  function kissComplete(){
+    vibrate(200);
+    darkEl.style.transition='opacity 2s';
+    darkEl.style.opacity='1';
+    var el=screens.branch-a;
+    setTimeout(function(){
+      el.innerHTML='';
+      darkEl.style.opacity='0';
+      addLine(el,'"我感受到了……"','xiaoqian-line',0);
+      addLine(el,'"你唇上的温度。"','xiaoqian-line',1200);
+      addLine(el,'"好暖。"','xiaoqian-line',2400);
+      addLine(el,'"暖得……让我舍不得吃你。"','xiaoqian-line',3400);
+    },2500);
+    setTimeout(function(){
+      vibrate(150);
+      el.innerHTML='';
+      addLine(el,'你睁开眼。庙里空荡荡的。烛火还在烧。签筒还在。只是小倩不见了。','narrator-line',400);
+      addLine(el,'地上，落着一根红绳。红绳上系着一只铜铃。','narrator-line',2000);
+      addLine(el,'"你走吧。趁我还舍不得吃你之前。"','xiaoqian-line',3500);
+    },8000);
+    setTimeout(function(){
+      el.innerHTML='';
+      addLine(el,'天亮了。','narrator-line',400);
+      addLine(el,'你走出古庙。回头时，庙门已经消失了。只剩一片荒草。和一根，系在你手腕上的红绳。','narrator-line',1400);
+    },14000);
+    setTimeout(function(){showEnding('上上签：红绳','你活了下来。但从此，每到深夜，你都能听见，枕边有铃铛在响。')},18000);
+  }
+
+  function kissRetreat(){
+    vibrate(100);
+    var el=screens.branch-a;
+    el.innerHTML='';
+    addLine(el,'你后退了一步。','narrator-line',400);
+    addLine(el,'……','xiaoqian-line',1600);
+    addLine(el,'她低下了头。你看不清她的表情。只看见那根红线，在她指尖，一寸一寸地，断了。','narrator-line',3000);
+    addLine(el,'"连亲一下都不敢。还谈什么红绳。"','xiaoqian-line',5000);
+    addLine(el,'她抬起头。那双眼睛，已经不是枯井了。是深渊。','narrator-line',6500);
+    addLine(el,'"你再摇一次吧。这一次……签筒里，只剩一支了。"','xiaoqian-line',8000);
+    vibrate(200);
+    state.forceBranchC=true;
+    setTimeout(function(){startShaking()},10000);
+  }
+
+  // ===== BRANCH B: ONE MEETING =====
+  function startBranchB(){
+    showScreen('branch-b');
+    var el=screens.branch-b;
+    el.innerHTML='';
+    state.branchBStep=0;
+    vibrate(80);
+
+    addLine(el,'"中平签。"','xiaoqian-line',600);
+    addLine(el,'"一面之缘……也好。总好过没有。"','xiaoqian-line',1800);
+    addLine(el,'她看着你，目光很静。像在看一个，很快就要消失的人。','narrator-line',3200);
+    addLine(el,'"既然只有一面之缘，那便聊几句吧。让我……记住你。"','xiaoqian-line',4800);
+
+    setTimeout(function(){askQuestion(0)},6500);
+  }
+
+  var questions=[
+    {q:'"你今年，多大了？"',type:'input',key:'age'},
+    {q:'"你是一个人住吗？"',type:'choice',choices:['是','不是'],key:'alone'},
+    {q:'"你家的窗子，夜里关吗？"',type:'choice',choices:['关','不关'],key:'windowClosed'},
+    {q:'"你枕边……可有空位？"',type:'choice',choices:['有','没有'],key:'pillowEmpty'}
+  ];
+
+  function askQuestion(idx){
+    if(idx>=questions.length){
+      setTimeout(function(){showPermission()},1000);
+      return;
+    }
+    var el=screens.branch-b;
+    var q=questions[idx];
+    addLine(el,q.q,'xiaoqian-line',400);
+
+    setTimeout(function(){
+      if(q.type==='input'){
+        var input=document.createElement('input');
+        input.className='question-input';
+        input.type='text';
+        input.placeholder='请输入...';
+        input.id='q-input-'+idx;
+        el.appendChild(input);
+        var btn=document.createElement('button');
+        btn.className='choice-btn';
+        btn.textContent='确定';
+        btn.style.marginTop='8px';
+        btn.onclick=function(){
+          state[q.key]=input.value;
+          input.remove();btn.remove();
+          askQuestion(idx+1);
+        };
+        el.appendChild(btn);
+        input.focus();
+      }else{
+        var area=document.createElement('div');
+        area.className='question-choices';
+        q.choices.forEach(function(c){
+          var b=document.createElement('button');
+          b.className='choice-btn';
+          b.textContent=c;
+          b.onclick=function(){
+            state[q.key]=(c===q.choices[0]);
+            area.remove();
+            askQuestion(idx+1);
+          };
+          area.appendChild(b);
+        });
+        el.appendChild(area);
+      }
+    },1200);
+  }
+
+  function showPermission(){
+    if(state.permShown)return;
+    state.permShown=true;
+    permEl.classList.add('show');
+  }
+
+  function onPermDeny(){
+    permEl.classList.remove('show');
+    state.permResult='denied';
+    var el=screens.branch-b;
+    // Flash fake "acquired" text
+    var ghost=document.createElement('div');
+    ghost.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:#3a3a3a;font-size:12px;z-index:1000;opacity:0;transition:opacity .3s;pointer-events:none';
+    ghost.textContent='已获取位置权限';
+    document.body.appendChild(ghost);
+    setTimeout(function(){ghost.style.opacity='0.6'},100);
+    setTimeout(function(){ghost.style.opacity='0';setTimeout(function(){ghost.remove()},500)},1500);
+
+    addLine(el,'"你拒绝了我。可我还是知道，你在哪儿。"','xiaoqian-line',2000);
+    setTimeout(function(){finishBranchB()},4000);
+  }
+
+  function onPermAllow(){
+    permEl.classList.remove('show');
+    state.permResult='allowed';
+    var ghost=document.createElement('div');
+    ghost.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:#3a3a3a;font-size:12px;z-index:1000;opacity:0;transition:opacity .3s;pointer-events:none';
+    ghost.textContent='已获取位置权限';
+    document.body.appendChild(ghost);
+    setTimeout(function(){ghost.style.opacity='0.6'},100);
+    setTimeout(function(){ghost.style.opacity='0';setTimeout(function(){ghost.remove()},500)},1500);
+
+    addLine(el,'"……谢谢你。"','xiaoqian-line',2000);
+    setTimeout(function(){finishBranchB()},4000);
+  }
+
+  function finishBranchB(){
+    var el=screens.branch-b;
+    addLine(el,'"你的命，我已知晓。你我的缘分虽浅，但我不强求。"','xiaoqian-line',400);
+    addLine(el,'"只是……夜深了，你该回家了。"','xiaoqian-line',1600);
+    addLine(el,'她站起身。红衣在烛火中晃了一下。你看不清她是怎么消失的。只看见烛火灭了。','narrator-line',3000);
+    setTimeout(function(){showReceipt()},5000);
+  }
+
+  function showReceipt(){
+    var el=screens.branch-b;
+    el.innerHTML='';
+    addLine(el,'你走出古庙时，天刚蒙蒙亮。手里多了一张纸。是那支签的签文。背面，多了几行小字。','narrator-line',400);
+
+    var aloneText=state.alone===true?'是':'否';
+    var windowText=state.windowClosed===true?'关':'不关';
+    var pillowText=state.pillowEmpty===true?'有空位':'无空位';
+
+    setTimeout(function(){
+      var receipt=document.createElement('div');
+      receipt.className='receipt';
+      receipt.innerHTML=
+        '<div><span class="receipt-label">签文：</span><span class="receipt-value">一面之缘</span></div>'+
+        '<div><span class="receipt-label">缘主：</span><span class="receipt-value">'+(state.age||'无名氏')+'</span></div>'+
+        '<div><span class="receipt-label">住宅：</span><span class="receipt-value">未知</span></div>'+
+        '<div><span class="receipt-label">今夜窗门：</span><span class="receipt-value">'+windowText+'</span></div>'+
+        '<div><span class="receipt-label">枕边：</span><span class="receipt-value">'+pillowText+'</span></div>'+
+        '<div class="receipt-msg">"我记下了。"</div>';
+      el.appendChild(receipt);
+    },2000);
+
+    setTimeout(function(){
+      showEnding('中平签：一面之缘','你回家了。一切如常。只是那天夜里，你忘了关窗。');
+    },5000);
+  }
+
+  // ===== BRANCH C: HORROR CHASE =====
+  function startBranchC(){
+    showScreen('branch-c');
+    var el=screens.branch-c;
+    el.innerHTML='';
+    state.chaseIdx=0;
+    state.chaseWrong=0;
+
+    screens.branch-c.classList.add('screen-shake');
+    setTimeout(function(){screens.branch-c.classList.remove('screen-shake')},400);
+    vibrate([200,100,200,100,300]);
+
+    addLine(el,'"下下签……你抽了下下签！"','xiaoqian-line',400);
+    addLine(el,'"快跑——！！！"','xiaoqian-line',1400);
+    addLine(el,'你来不及想。你只能跑。','narrator-line',2600);
+    setTimeout(function(){showChaseScene(0)},3800);
+  }
+
+  var chaseScenes=[
+    {
+      text:'你冲向庙门。门关着。左边是一扇破窗。右边是佛像背后。',
+      choices:[{text:'爬窗',correct:true},{text:'躲到佛像后',correct:false}],
+      error:'你躲在佛像后，屏住呼吸。脚步声停了。你松了一口气。然后你听见——头顶传来一个声音。\n\n"找到你了。"'
+    },
+    {
+      text:'你翻出窗外，摔在院子里。荒草有半人高。前面是一棵枯树。左边是一条小路。右边是一口井。',
+      choices:[{text:'走小路',correct:false},{text:'躲进井里',correct:true}],
+      error:'你沿着小路跑。跑了很久。然后你发现——你回到了原地。那棵枯树，还在前面。\n\n"你跑不出去的。这庙里，只有一条路。通往我。"'
+    },
+    {
+      text:'你从井里爬出来时，浑身湿透。身后有脚步声。越来越近。前面是一堵围墙。墙上有一个缺口。',
+      choices:[{text:'翻墙',correct:true},{text:'回头看一眼',correct:false}],
+      error:'你回了头。你看见了一张脸。一张没有血色的脸。眼眶里全是黑的。嘴角，在笑。\n\n"你回头了。你看见我了。那你就……留下来吧。"'
+    }
+  ];
+
+  function showChaseScene(idx){
+    var el=screens.branch-c;
+    el.innerHTML='';
+    state.chaseIdx=idx;
+    var scene=chaseScenes[idx];
+
+    var content=document.createElement('div');
+    content.className='branch-c-content';
+    addLine(content,scene.text,'chase-scene',300);
+
+    // Timer text
+    var timer=document.createElement('div');
+    timer.className='chase-timer';
+    timer.textContent='选择吧……';
+    content.appendChild(timer);
+
+    // Choices
+    var choices=document.createElement('div');
+    choices.className='chase-choices';
+    scene.choices.forEach(function(c){
+      var btn=document.createElement('button');
+      btn.className='choice-btn';
+      btn.textContent=c.text;
+      btn.onclick=function(){
+        vibrate(80);
+        if(c.correct){
+          if(idx<2){
+            showChaseScene(idx+1);
+          }else{
+            chaseEscape();
+          }
+        }else{
+          showChaseError(scene.error,idx);
+        }
+      };
+      choices.appendChild(btn);
+    });
+    content.appendChild(choices);
+    el.appendChild(content);
+  }
+
+  function showChaseError(msg,idx){
+    var el=screens.branch-c;
+    el.innerHTML='';
+    state.chaseWrong++;
+    vibrate([200,50,200,50,300]);
+
+    var content=document.createElement('div');
+    content.className='branch-c-content';
+    addLine(content,msg,'chase-error',300);
+    el.appendChild(content);
+
+    flash(200);
+    screens.branch-c.classList.add('screen-shake');
+    setTimeout(function(){screens.branch-c.classList.remove('screen-shake')},400);
+
+    setTimeout(function(){showChaseScene(0)},3000);
+  }
+
+  function chaseEscape(){
+    var el=screens.branch-c;
+    el.innerHTML='';
+    vibrate(100);
+
+    addLine(el,'你翻出了墙。摔在墙外的荒草中。你爬起来，拼命跑。身后的脚步声，停了。','narrator-line',400);
+    addLine(el,'你忍不住，回头看了一眼。','narrator-line',2400);
+    addLine(el,'古庙的门，缓缓关上了。小倩站在门口。红衣在夜色中，像一团火。她看着你，笑了。这一次，是温柔的笑。','narrator-line',3600);
+    addLine(el,'"下下签，其实是我吓你的。我只是想看看……你怕我的时候，会是什么表情。"','xiaoqian-line',6000);
+    addLine(el,'"你翻墙的样子，真可爱。"','xiaoqian-line',7800);
+    addLine(el,'天亮了。庙消失了。你站在一片荒草中。手腕上，不知何时，多了一道红痕。像是被绳子勒过的。','narrator-line',9500);
+    vibrate(60);
+    setTimeout(function(){
+      showEnding('下下签：血光之灾','你活了下来。但你知道，她只是……还没玩够。');
+    },12000);
+  }
+
+  // ===== BRANCH D: META =====
+  function startBranchD(){
+    showScreen('branch-d');
+    var el=screens.branch-d;
+    el.innerHTML='';
+    vibrate(100);
+
+    addLine(el,'"奇怪……"','xiaoqian-line',800);
+    addLine(el,'"这支签，不该存在。"','xiaoqian-line',2000);
+    addLine(el,'她抬起头，第一次，直直地看着你。那目光，像是穿透了屏幕。','narrator-line',3500);
+    addLine(el,'"你到底是谁？"','xiaoqian-line',5000);
+
+    setTimeout(function(){
+      var now=new Date();
+      var hour=now.getHours();
+      var timeStr=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+      var content=document.createElement('div');
+      content.className='branch-d-content';
+
+      if(hour>=23||hour<3){
+        addLine(content,'"子时已过，阴气最重。难怪……难怪你来了。"','xiaoqian-line',0);
+        addLine(content,'"你不是误入。你是被引来的。"','xiaoqian-line',1200);
+      }else{
+        addLine(content,'"太阳还挂着。你竟能在此时找到这里。"','xiaoqian-line',0);
+        addLine(content,'"你不是凡人。或者说……你那边，现在是白天？"','xiaoqian-line',1200);
+      }
+      addLine(content,'她凑近了。近得你能看见，她睫毛上，凝着一层薄霜。','narrator-line',2800);
+      addLine(content,'"告诉我。你来这里，是为了什么？"','xiaoqian-line',4000);
+
+      var timeDiv=document.createElement('div');
+      timeDiv.className='meta-time';
+      timeDiv.textContent='当前时间：'+timeStr;
+      content.appendChild(timeDiv);
+
+      var input=document.createElement('input');
+      input.className='meta-input';
+      input.placeholder='写下你此行的目的';
+      input.id='meta-purpose';
+      content.appendChild(input);
+
+      var btn=document.createElement('button');
+      btn.className='choice-btn';
+      btn.textContent='写下';
+      btn.style.marginTop='12px';
+      btn.onclick=function(){
+        var val=input.value||'';
+        state.playerName=val;
+        input.remove();btn.remove();
+        showMetaResult(val);
+      };
+      content.appendChild(btn);
+
+      el.appendChild(content);
+    },6000);
+  }
+
+  function showMetaResult(purpose){
+    var el=screens.branch-d;
+    addLine(el,'"原来如此。"','xiaoqian-line',400);
+    addLine(el,'"'+purpose+'"',  'xiaoqian-line',1400);
+    addLine(el,'"我记下了。"','xiaoqian-line',2600);
+    addLine(el,'她伸出手，轻轻碰了碰你的额头。指尖冰凉。然后，一切消失了。','narrator-line',4000);
+
+    // Simulate notification after delay
+    setTimeout(function(){
+      showEnding('空白签：无字','——');
+    },7000);
+
+    // Show fake notification after game ends
+    setTimeout(function(){
+      var notif=document.createElement('div');
+      notif.style.cssText='position:fixed;top:40px;left:50%;transform:translateX(-50%);background:rgba(30,30,32,0.95);border-radius:14px;padding:14px 18px;max-width:320px;width:85%;z-index:9999;opacity:0;transition:opacity 1s;box-shadow:0 4px 20px rgba(0,0,0,0.5);border:1px solid #333';
+      notif.innerHTML='<div style="font-size:11px;color:#8e8e93">小倩的姻缘签</div><div style="font-size:14px;color:#fff;font-weight:600;margin-top:4px">"你写下的东西，我还在看。"</div><div style="font-size:12px;color:#8e8e93;margin-top:4px">——小倩</div>';
+      document.body.appendChild(notif);
+      setTimeout(function(){notif.style.opacity='1'},100);
+      setTimeout(function(){notif.style.opacity='0';setTimeout(function(){notif.remove()},1000)},6000);
+    },10000);
+  }
+
+  // ===== ENDING =====
+  function showEnding(title,desc){
+    showScreen('ending');
+    var el=screens.ending;
+    el.innerHTML='';
+    vibrate(60);
+
+    addLine(el,'结局·'+title,'ending-line big',400);
+    addLine(el,desc,'ending-line',1600);
+    addLine(el,'','ending-line',3000);
+    addLine(el,'本应用已关闭。','ending-line final',3500);
+    addLine(el,'但她还在。','ending-line final',4500);
+
+    setTimeout(function(){vibrate(30)},5500);
+
+    // Restart button
+    setTimeout(function(){
+      var btn=document.createElement('button');
+      btn.className='choice-btn';
+      btn.textContent='再来一次';
+      btn.style.cssText='margin-top:30px;font-size:13px;padding:10px 24px;border-color:#3a3a3a;color:#5a5a5a';
+      btn.onclick=function(){location.reload()};
+      el.appendChild(btn);
+    },6000);
+  }
+
+  // ===== PUBLIC =====
+  return{
+    init:function(){runIntro()},
+    choiceEnter:choiceEnter,
+    choiceStay:choiceStay,
+    kissRetreat:kissRetreat,
+    kissComplete:kissComplete,
+    onPermDeny:onPermDeny,
+    onPermAllow:onPermAllow
+  };
+})();
+
+document.addEventListener('DOMContentLoaded',function(){Game.init()});
+</script>
+</body>
+</html>
