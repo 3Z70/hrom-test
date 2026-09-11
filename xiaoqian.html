@@ -408,21 +408,59 @@ var Game=(function(){
 
   // ===== SHAKING =====
   var motionSupported=false;
+  var motionRequested=false;
   var lastAccel={x:0,y:0,z:0};
   var shakeListenersAttached=false;
   var currentShakeEl=null;
+  var motionTryTimer=null;
+  var lastShakeTap=0;
+  var lastTouchEvent=0;
+
+  // iOS requires requestPermission() to be called from a user gesture (tap/click).
+  function requestMotionPermission(){
+    if(motionRequested)return;
+    motionRequested=true;
+    if(window.DeviceMotionEvent){
+      if(typeof DeviceMotionEvent.requestPermission==='function'){
+        DeviceMotionEvent.requestPermission().then(function(s){
+          if(s==='granted'){
+            motionSupported=true;
+            window.addEventListener('devicemotion',onMotion);
+          }
+        }).catch(function(){});
+      }else{
+        motionSupported=true;
+        window.addEventListener('devicemotion',onMotion);
+      }
+    }
+  }
+
+  // Ask permission on the very first user gesture anywhere in the game.
+  function hookFirstGesture(){
+    ['touchstart','touchend','mousedown','click'].forEach(function(ev){
+      document.addEventListener(ev,function one(){
+        requestMotionPermission();
+        ['touchstart','touchend','mousedown','click'].forEach(function(e2){
+          document.removeEventListener(e2,one);
+        });
+      });
+    });
+  }
 
   function removeShakeListeners(){
     window.removeEventListener('devicemotion',onMotion);
+    if(motionTryTimer){clearTimeout(motionTryTimer);motionTryTimer=null}
     if(currentShakeEl&&shakeListenersAttached){
-      currentShakeEl.removeEventListener('touchstart',onTapShake);
-      currentShakeEl.removeEventListener('mousedown',onTapShake);
+      currentShakeEl.removeEventListener('touchstart',onShakeTouch);
+      currentShakeEl.removeEventListener('touchmove',onShakeTouch);
+      currentShakeEl.removeEventListener('mousedown',onShakeTouch);
       shakeListenersAttached=false;
     }
   }
 
   function startShaking(){
     removeShakeListeners();
+    requestMotionPermission();
     showScreen('shake-screen');
     var el=screens.shake-screen;
     el.innerHTML='';
@@ -448,7 +486,12 @@ var Game=(function(){
     container.appendChild(tipped);
     el.appendChild(container);
 
-    var hint=addLine(el,'摇动手机，摇出你的签','shake-hint',200);
+    var hint=document.createElement('div');
+    hint.className='shake-hint';
+    hint.id='shake-hint';
+    hint.textContent='摇动手机，摇出你的签';
+    el.appendChild(hint);
+
     var prog=document.createElement('div');
     prog.className='shake-progress';
     var fill=document.createElement('div');
@@ -457,46 +500,72 @@ var Game=(function(){
     prog.appendChild(fill);
     el.appendChild(prog);
 
-    // Try device motion
-    if(window.DeviceMotionEvent){
-      if(typeof DeviceMotionEvent.requestPermission==='function'){
-        // iOS 13+
-        DeviceMotionEvent.requestPermission().then(function(s){
-          if(s==='granted'){
-            motionSupported=true;
-            window.addEventListener('devicemotion',onMotion);
-          }
-        }).catch(function(){});
-      }else{
-        motionSupported=true;
-        window.addEventListener('devicemotion',onMotion);
+    // If no motion sensor is confirmed shortly, guide the user to tap/shake screen.
+    if(motionTryTimer)clearTimeout(motionTryTimer);
+    motionTryTimer=setTimeout(function(){
+      if(!motionSupported&&state.shakeCount<state.shakeTarget){
+        var h=document.getElementById('shake-hint');
+        if(h)h.textContent='没检测到晃动传感器：快速点击屏幕，或拖动手指来回划动摇签';
       }
-    }
+    },1200);
 
-    // Fallback: tap/click to shake
-    el.addEventListener('touchstart',onTapShake,{passive:true});
-    el.addEventListener('mousedown',onTapShake);
+    // Always-available button: guaranteed way to progress.
+    var shakeBtn=document.createElement('button');
+    shakeBtn.className='choice-btn';
+    shakeBtn.textContent='摇签（点按或快速连击）';
+    shakeBtn.style.cssText='margin-top:22px;font-size:14px;padding:13px 20px;width:80%;max-width:260px;letter-spacing:2px';
+    shakeBtn.addEventListener('click',function(){onTapShake()});
+    shakeBtn.addEventListener('touchstart',function(e){e.preventDefault();onTapShake()},{passive:false});
+    el.appendChild(shakeBtn);
+
+    // Whole-screen fallback: tap OR fast swipe both count as a shake.
+    el.addEventListener('touchstart',onShakeTouch,{passive:true});
+    el.addEventListener('touchmove',onShakeTouch,{passive:true});
+    el.addEventListener('mousedown',onShakeTouch);
     shakeListenersAttached=true;
+  }
+
+  var lastSwipeX=0,lastSwipeY=0,swiping=false;
+
+  function onShakeTouch(e){
+    if(e.type==='touchmove'){
+      var t=e.touches[0];
+      if(!t)return;
+      if(!swiping){lastSwipeX=t.clientX;lastSwipeY=t.clientY;swiping=true;return}
+      var dx=Math.abs(t.clientX-lastSwipeX);
+      var dy=Math.abs(t.clientY-lastSwipeY);
+      if(dx>45||dy>45){
+        lastSwipeX=t.clientX;lastSwipeY=t.clientY;
+        addShakeProgress();
+      }
+      return;
+    }
+    if(e.type==='mousedown'){
+      // Ignore the synthetic mouse event right after a real touch on mobile.
+      if(Date.now()-lastTouchEvent<600)return;
+    }
+    if(e.type==='touchstart'){lastTouchEvent=Date.now();swiping=true}
+    if(Date.now()-lastShakeTap<150)return;
+    lastShakeTap=Date.now();
+    addShakeProgress();
+  }
+
+  function onTapShake(){
+    if(Date.now()-lastShakeTap<120)return;
+    lastShakeTap=Date.now();
+    addShakeProgress();
   }
 
   function onMotion(e){
     var a=e.accelerationIncludingGravity||e.acceleration;
     if(!a)return;
-    var dx=Math.abs(a.x-lastAccel.x);
-    var dy=Math.abs(a.y-lastAccel.y);
-    var dz=Math.abs(a.z-lastAccel.z);
+    var dx=Math.abs((a.x||0)-lastAccel.x);
+    var dy=Math.abs((a.y||0)-lastAccel.y);
+    var dz=Math.abs((a.z||0)-lastAccel.z);
     lastAccel={x:a.x||0,y:a.y||0,z:a.z||0};
-    if(dx+dy+dz>18){
+    if(dx+dy+dz>12){
       addShakeProgress();
     }
-  }
-
-  var lastTapTime=0;
-  function onTapShake(){
-    var now=Date.now();
-    if(now-lastTapTime<150)return;
-    lastTapTime=now;
-    addShakeProgress();
   }
 
   function addShakeProgress(){
@@ -1099,6 +1168,7 @@ var Game=(function(){
   // ===== PUBLIC =====
   return{
     init:function(){runIntro()},
+    hookFirstGesture:hookFirstGesture,
     choiceEnter:choiceEnter,
     choiceStay:choiceStay,
     kissRetreat:kissRetreat,
@@ -1108,7 +1178,7 @@ var Game=(function(){
   };
 })();
 
-document.addEventListener('DOMContentLoaded',function(){Game.init()});
+document.addEventListener('DOMContentLoaded',function(){Game.init();Game.hookFirstGesture()});
 </script>
 </body>
 </html>
