@@ -14,34 +14,34 @@ body{
 }
 
 /* ===== 开机 BIOS ===== */
-#boot{position:fixed;inset:0;background:#000080;color:#fff;z-index:60;display:flex;justify-content:center;align-items:center;flex-direction:column}
+#boot{position:fixed;top:0;left:0;right:0;bottom:0;background:#000080;color:#fff;z-index:60;display:flex;justify-content:center;align-items:center;flex-direction:column}
 .bootmem{width:430px;max-width:92vw;font-size:14px;line-height:1.8;white-space:pre;font-family:"SimSun",monospace}
 .bootbar{width:430px;max-width:92vw;height:14px;border:1px solid #c0c0c0;background:#000080;margin-top:14px}
 .bootfill{height:100%;width:0;background:#808080;transition:width .15s linear}
 .bootlabel{margin-top:8px;font-size:14px}
 
 /* ===== 登录 ===== */
-#login{position:fixed;inset:0;background:linear-gradient(160deg,#0a3ec7 0%,#1a6fd6 45%,#3b9ff0 80%,#7cc3f7 100%);z-index:50;display:none}
+#login{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(160deg,#0a3ec7 0%,#1a6fd6 45%,#3b9ff0 80%,#7cc3f7 100%);z-index:50;display:none}
 .loginbox{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:560px;max-width:94vw;background:#ece9d8;border:1px solid #8a8a8a;box-shadow:0 2px 14px rgba(0,0,0,.5)}
 .titlebar{background:linear-gradient(#0a246a,#0a246a 48%,#3a6ea5);color:#fff;font-size:14px;padding:5px 10px;display:flex;align-items:center}
 .titlebar .tbt{flex:1;font-weight:normal;letter-spacing:.5px;white-space:nowrap;overflow:hidden}
-.titlebar .tb-btns{display:flex;gap:2px}
+.titlebar .tb-btns{display:flex}.titlebar .tb-btns span+span{margin-left:2px}
 .titlebar .tb-btns span{width:18px;height:16px;background:#d4d0c8;border:1px solid #fff;border-color:#ffe #808080 #808080 #ffe;color:#000;font-size:10px;text-align:center;line-height:16px;font-family:serif}
 .lb{display:none}
-.loginbox .body{padding:20px 24px 14px;display:flex;gap:14px;align-items:center}
+.loginbox .body{padding:20px 24px 14px;display:flex;align-items:center}.loginbox .fields{margin-left:14px}
 .loginbox .logo{width:84px;height:84px;background:#fff;border:1px solid #000;display:flex;align-items:center;justify-content:center;font-size:12px;text-align:center;flex-shrink:0}
 .fields{flex:1}
 .frow{margin-bottom:10px;display:flex;align-items:center}
 .frow label{width:70px;text-align:right;padding-right:8px;font-size:14px;flex-shrink:0}
 .frow input{flex:1;padding:4px 6px;font-family:"SimSun",monospace;font-size:14px;border:1px solid #7f9db9;background:#fff}
 .hint{margin-top:4px;font-size:12px;color:#555;min-height:16px}
-.btnrow{background:#e6e3d4;border-top:1px solid #8a8a8a;padding:10px 12px;display:flex;justify-content:flex-end;gap:10px}
+.btnrow{background:#e6e3d4;border-top:1px solid #8a8a8a;padding:10px 12px;display:flex;justify-content:flex-end}.btnrow .btnwin{margin-left:10px}
 .btnwin{min-width:76px;padding:5px 14px;font-family:"SimSun",serif;font-size:14px;background:#d4d0c8;color:#000;border:1px solid;border-color:#ffe #404040 #404040 #ffe;box-shadow:inset 1px 1px 0 #fff;cursor:pointer}
 .btnwin:hover{background:#e6e3d6}
 .btnwin:active{border-color:#404040;box-shadow:none}
 
 /* ===== 桌面 ===== */
-#desktop{position:fixed;inset:0;background:radial-gradient(circle at 50% 40%,#0b6bd6 0%,#0a4fae 45%,#073a86 100%);display:none;z-index:10}
+#desktop{position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(circle at 50% 40%,#0b6bd6 0%,#0a4fae 45%,#073a86 100%);display:none;z-index:10}
 .desk-icons{position:absolute;top:12px;left:12px;width:120px;padding:8px;text-align:center}
 .ico{width:84px;margin:0 auto;cursor:pointer}
 .ico .glyph{width:42px;height:42px;margin:0 auto;background:#ece9d8;border:1px solid #f0f0f0;display:flex;align-items:center;justify-content:center;font-size:24px}
@@ -51,7 +51,7 @@ body{
 .taskbar .tray{margin-left:auto;font-size:12px;padding:0 6px}
 
 /* ===== 主窗口 ===== */
-#appwin{position:fixed;left:50%;top:50%;transform:translate(-50%,-52%);width:680px;max-width:96vw;height:80vh;min-height:460px;background:#d4d0c8;border:1px solid #fff;border-color:#fff #000 #000 #fff;box-shadow:2px 2px 0 #000;display:none;z-index:30;flex-direction:column}
+#appwin{position:fixed;left:50%;top:calc(50% + 22px);transform:translate(-50%,-52%);width:680px;max-width:96vw;height:80vh;min-height:460px;background:#d4d0c8;border:1px solid #fff;border-color:#fff #000 #000 #fff;box-shadow:2px 2px 0 #000;display:none;z-index:30;flex-direction:column}
 #appwin .titlebar .recdot{display:none;width:9px;height:9px;background:#ff0000;border-radius:50%;margin-left:8px;box-shadow:0 0 4px #f00}
 #appwin .recdot.on{display:inline-block;animation:rp 1s steps(1) infinite}
 @keyframes rp{50%{opacity:.25}}
@@ -60,10 +60,10 @@ body{
 .menubar span:hover{background:#0a246a;color:#fff}
 .mn-on{background:#0a246a;color:#fff}
 #content{flex:1;background:#ece9d8;padding:12px 14px;overflow:auto;position:relative}
-.statusbar{background:#d4d0c8;border-top:1px solid #808080;padding:3px 8px;font-size:12px;display:flex;gap:16px}
+.statusbar{background:#d4d0c8;border-top:1px solid #808080;padding:3px 8px;font-size:12px;display:flex}.statusbar span+span{margin-left:16px}
 
 /* 工具栏 */
-.toolbar{background:#d4d0c8;border:1px solid #808080;padding:4px;margin-bottom:8px;display:flex;gap:2px;align-items:center}
+.toolbar{background:#d4d0c8;border:1px solid #808080;padding:4px;margin-bottom:8px;display:flex;align-items:center}.toolbar>*+*{margin-left:2px}
 .tbtn{width:26px;height:24px;background:#d4d0c8;border:1px solid;border-color:#ffe #404040 #404040 #ffe;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer}
 .tbtn:hover{background:#fff}
 .tsep{width:1px;height:20px;background:#808080;margin:0 4px}
@@ -78,7 +78,7 @@ tr.phantom td{color:#888;background:#f3f3dc;font-style:italic}
 tr.phantom td.x{text-align:center}
 
 /* 便签 */
-#sticky{position:fixed;left:22px;bottom:64px;width:250px;background:#fff4c2;box-shadow:3px 3px 10px rgba(0,0,0,.4);padding:16px 14px;font-family:"KaiTi","楷体","STKaiti","SimSun",cursive;font-size:16px;color:#333;z-index:28;transform:rotate(-1.5deg);line-height:1.9;border-top:24px solid #f7e58b;display:none}
+#sticky{position:fixed;left:14px;top:14px;bottom:auto;width:234px;background:#fff4c2;box-shadow:3px 3px 10px rgba(0,0,0,.4);padding:12px 12px;font-family:"KaiTi","楷体","STKaiti","SimSun",cursive;font-size:14.5px;color:#333;z-index:34;transform:rotate(-1.5deg);line-height:1.6;border-top:20px solid #f7e58b;display:none}
 #sticky .nhead{position:absolute;top:-20px;left:6px;font-size:12px;color:#8a6d1b;font-family:"SimSun",sans-serif}
 #sticky .ntxt{white-space:pre-line;transform:rotate(-0.6deg)}
 #sticky.special{background:#ffe9e6;border-top-color:#f3b7ae}
@@ -96,7 +96,7 @@ tr.phantom td.x{text-align:center}
 .claim .c-l{width:70px;color:#555;flex-shrink:0}
 .claim .c-v{flex:1;padding-left:8px;min-height:20px}
 .claim .c-v.bad{color:#c00;letter-spacing:2px;font-family:"SimSun",monospace}
-.c-btns{margin-top:22px;display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.c-btns{margin-top:22px;display:flex;justify-content:center;flex-wrap:wrap}.c-btns .bigb{margin:6px 10px}
 .bigb{flex:1;max-width:260px;min-width:150px;padding:16px 0;font-size:22px;font-family:"SimHei","SimSun",serif;cursor:pointer;border:1px solid #000;box-shadow:2px 2px 0 rgba(0,0,0,.35)}
 .bigb.pass{background:#3a7d3a;color:#fff}
 .bigb.rej{background:#a03030;color:#fff}
@@ -118,7 +118,7 @@ tr.phantom td.x{text-align:center}
 .comp .c-head{font-size:15px;text-align:center;border-bottom:2px solid #7f9db9;padding-bottom:10px;margin-bottom:14px}
 .comp .msg{font-size:17px;line-height:1.9;background:#fbf6e9;border:1px solid #e2d9b8;padding:16px 18px;margin-bottom:8px;font-family:"KaiTi","楷体","SimSun",serif}
 .comp .from{text-align:right;color:#888;font-size:12px;margin-bottom:16px}
-.opts{display:flex;flex-direction:column;gap:12px}
+.opts{display:flex;flex-direction:column}.opts .opt{margin:0 13px}.opts .opt+.opt{margin-top:12px}
 .opt{padding:14px 16px;font-size:15px;background:#ece9d8;border:1px solid;border-color:#fff #808080 #808080 #fff;cursor:pointer;text-align:left}
 .opt:hover{background:#fff}
 .opt:active{border-color:#808080}
@@ -142,12 +142,12 @@ tr.phantom td.x{text-align:center}
 #modalwin{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:420px;max-width:92vw;background:#ece9d8;border:1px solid;border-color:#fff #000 #000 #fff;box-shadow:3px 3px 18px rgba(0,0,0,.55);z-index:95;display:none;font-size:13px}
 #modalwin .m-title{background:linear-gradient(#000080,#3a3a9a);color:#fff;padding:6px 10px;font-weight:bold}
 #modalwin .m-body{padding:18px;line-height:1.8}
-#modalwin .m-foot{background:#e6e3d4;border-top:1px solid #a0a0a0;padding:10px;display:flex;justify-content:center;gap:12px}
+#modalwin .m-foot{background:#e6e3d4;border-top:1px solid #a0a0a0;padding:10px;display:flex;justify-content:center}#modalwin .m-foot .btnwin{margin:0 6px}
 .noop{cursor:not-allowed}
 .noop:hover{background:#3a3a6a!important;color:#fff}
 
 /* 全局效果 */
-#flash{position:fixed;inset:0;background:#000;z-index:96;pointer-events:none;opacity:0}
+#flash{position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:96;pointer-events:none;opacity:0}
 #flash.on{opacity:1;transition:opacity 0s}
 .quake{animation:qk .16s 1}
 @keyframes qk{0%,100%{transform:translate(-50%,-52%)}25%{transform:translate(calc(-50% - 5px),-52%)}75%{transform:translate(calc(-50% + 5px),-52%)}}
@@ -159,42 +159,42 @@ body.qk-all{animation:qka .16s 1}
 @keyframes bigfl{50%{opacity:.35}}
 
 /* 纯黑表格 */
-#whitetab{position:fixed;inset:0;background:#000;z-index:110;display:none;flex-direction:column;align-items:center;padding:9vh 4vw;box-sizing:border-box;font-family:"SimHei","Microsoft YaHei",sans-serif}
+#whitetab{position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:110;display:none;flex-direction:column;align-items:center;padding:9vh 4vw;box-sizing:border-box;font-family:"SimHei","Microsoft YaHei",sans-serif}
 #wtLine{font-size:26px;font-weight:bold;color:#fff;text-align:center;white-space:nowrap;letter-spacing:2px}
-#wtBody{margin-top:70px;width:min(660px,90vw);min-height:260px;box-sizing:border-box}
+#wtBody{margin-top:70px;width:90vw;max-width:660px;min-height:260px;box-sizing:border-box}
 .wt-row{font-size:28px;color:#eee;font-family:"SimSun","SimHei",serif;min-height:56px;line-height:56px}
 .wt-caret{display:inline-block;width:15px;height:34px;background:#fff;margin-left:4px;vertical-align:middle;animation:rp 1s steps(1) infinite}
 
 /* 顶部录制条 */
-#recbar{position:fixed;top:0;left:0;right:0;background:#2b2b2b;color:#eee;padding:8px 16px;font-size:13px;z-index:112;display:none;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.4);font-family:"SimSun",monospace}
+#recbar{position:fixed;top:0;left:0;right:0;background:#2b2b2b;color:#eee;padding:8px 16px;font-size:13px;z-index:112;display:none;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.4)}#recbar i{margin-right:8px;;font-family:"SimSun",monospace}
 #recbar i{width:9px;height:9px;border-radius:50%;background:#ff2020;animation:rp 1s steps(1) infinite}
 
 /* 结局红点闪烁 */
 #recRed{position:fixed;top:14px;right:16px;width:12px;height:12px;border-radius:50%;background:#ff2020;z-index:160;display:none;box-shadow:0 0 8px #ff2020}
 
 /* 大结局 */
-#bigline{position:fixed;inset:0;background:#000;color:#fff;z-index:130;display:none;align-items:center;justify-content:center;font-size:56px;font-weight:bold;letter-spacing:10px;font-family:"SimHei","SimSun",serif;text-align:center;padding:0 22px;box-sizing:border-box;transition:opacity 2.4s linear}
+#bigline{position:fixed;top:0;left:0;right:0;bottom:0;background:#000;color:#fff;z-index:130;display:none;align-items:center;justify-content:center;font-size:56px;font-weight:bold;letter-spacing:10px;font-family:"SimHei","SimSun",serif;text-align:center;padding:0 22px;box-sizing:border-box;transition:opacity 2.4s linear}
 #bigline.dim{opacity:0}
-#fadeend{position:fixed;inset:0;background:#000;z-index:125;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:"KaiTi","楷体","SimSun",serif;color:#bbb;padding:20px;box-sizing:border-box}
+#fadeend{position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:125;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:"KaiTi","楷体","SimSun",serif;color:#bbb;padding:20px;box-sizing:border-box}
 #fadeend .fe-line{font-size:19px;line-height:2.2;letter-spacing:2px;opacity:0;animation:fein 4.5s linear forwards}
 @keyframes fein{0%{opacity:0}55%{opacity:0}100%{opacity:1}}
 .endTitle{font-size:24px;color:#fff;letter-spacing:2px;margin-top:36px;font-family:"SimHei","SimSun",serif;opacity:0;transition:opacity 1.8s ease}
 .endTitle.show{opacity:1}
 
 /* 彩蛋 */
-#egg{position:fixed;inset:0;background:#000;z-index:140;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;font-family:"SimHei","SimSun",serif;color:#fff}
+#egg{position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:140;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;font-family:"SimHei","SimSun",serif;color:#fff}
 #eggBig{font-size:56px;letter-spacing:14px;font-weight:bold;min-height:90px;line-height:90px}
 #eggNorm{font-size:22px;color:#ccc;min-height:60px;line-height:60px;margin-top:30px;letter-spacing:3px}
 #egg .wt-caret{background:#fff}
 #wtLine .wt-caret{background:#fff}
-#eggOps{display:none;margin-top:34px;flex-direction:row;gap:26px}
+#eggOps{display:none;margin-top:34px;flex-direction:row}.egobtn{margin:0 13px}
 .egobtn{padding:14px 30px;font-size:19px;letter-spacing:6px;background:#ece9d8;border:1px solid;border-color:#fff #808080 #808080 #fff;cursor:pointer}
 .egobtn:hover{background:#fff}
 .egobtn:active{border-color:#808080}
 .egobtn.no-dodge{transition:margin-left .12s}
 
 /* 彩蛋答应结局 */
-#pinkend{position:fixed;inset:0;background:#ffd9ec;z-index:150;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:"KaiTi","楷体","SimSun",serif;color:#d63384;padding:24px;box-sizing:border-box}
+#pinkend{position:fixed;top:0;left:0;right:0;bottom:0;background:#ffd9ec;z-index:150;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:"KaiTi","楷体","SimSun",serif;color:#d63384;padding:24px;box-sizing:border-box}
 #pinkMsg{font-size:30px;line-height:2;}
 #pinkend .endTitle{color:#a83a72}
 #pinkend .fe-line{font-size:19px;line-height:2.2;letter-spacing:2px;color:#a83a72;margin-top:28px;opacity:0;animation:fein 4s linear forwards}
@@ -513,13 +513,22 @@ function showToast(title,body,dur,cb){
   const t=$('toast');t.classList.remove('on');void t.offsetWidth;t.classList.add('on');
   playPop();
   clearTimeout(t._tm);
+  t._cb=cb||null;
   t._tm=setTimeout(()=>{hideToast();if(cb)cb();},dur||5000);
 }
 function hideToast(){
-  if($('toast')._tm)clearTimeout($('toast')._tm);
-  $('toast').classList.remove('on');
+  const t=$('toast');
+  if(t._tm)clearTimeout(t._tm);
+  t._cb=null;
+  t.classList.remove('on');
 }
-$('toast').addEventListener('click',()=>{clearTimeout($('toast')._tm);$('toast').classList.remove('on');});
+$('toast').addEventListener('click',()=>{
+  const t=$('toast');
+  clearTimeout(t._tm);
+  t.classList.remove('on');
+  const cb=t._cb;t._cb=null;
+  if(cb)setTimeout(cb,250);
+});
 function showTopToast(txt,dur,cb){
   const t=$('toptoast');t.textContent=txt;t.classList.remove('on');void t.offsetWidth;t.classList.add('on');
   clearTimeout(t._tm);
@@ -911,7 +920,7 @@ function renderOvertimeQ(){
     '<div class="msg" style="font-size:19px;text-align:center">“请问你愿意今晚继续加班吗。我想看着你。”'+
     '</div>'+
     '<div class="from" style="text-align:center">—— 老板</div>'+
-    '<div class="opts" id="qOps" style="flex-direction:row;justify-content:center;gap:26px"></div>'+
+    '<div class="opts" id="qOps" style="flex-direction:row;justify-content:center;margin-left:-13px;margin-right:-13px"></div>'+
     '<div class="c-tip" id="qTip"></div>';
   c.appendChild(card);
   const no=document.createElement('button');no.className='opt';no.id='noBtn';no.textContent='不愿意';
